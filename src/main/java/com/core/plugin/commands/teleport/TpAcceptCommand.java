@@ -12,7 +12,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "tpaccept",
         aliases = {"tpyes", "tpallow"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Accept a pending TPA request",
         usage = "/tpaccept",
         playerOnly = true,

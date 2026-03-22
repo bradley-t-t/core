@@ -16,7 +16,7 @@ import java.util.List;
 @CommandInfo(
         name = "tphere",
         aliases = {"tph", "s2p", "bring"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Teleport a player to you",
         usage = "/tphere <player>",
         playerOnly = true,

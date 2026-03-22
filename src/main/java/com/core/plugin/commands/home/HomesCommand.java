@@ -23,7 +23,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "homes",
         aliases = {"listhomes"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "List all your homes",
         usage = "/homes",
         icon = Material.RED_BED

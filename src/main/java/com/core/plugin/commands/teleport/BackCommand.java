@@ -16,7 +16,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "back",
         aliases = {"return", "ret"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Teleport to your last location",
         usage = "/back",
         playerOnly = true,

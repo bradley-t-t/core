@@ -16,7 +16,7 @@ import com.core.plugin.modules.rank.RankLevel;
 
 @CommandInfo(
         name = "warp",
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Teleport to a warp",
         usage = "/warp <name>",
         playerOnly = true,

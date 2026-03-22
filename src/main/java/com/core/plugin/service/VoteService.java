@@ -82,6 +82,28 @@ public final class VoteService implements Service {
     }
 
     void processVote(String username, String serviceName) {
+        processVote(username, serviceName, true);
+    }
+
+    /** Names that vote sites sometimes send as the username instead of the actual player. */
+    private static final java.util.Set<String> BOGUS_USERNAMES = java.util.Set.of(
+            "pmc", "planetminecraft", "mcsl", "minecraftservers",
+            "topg", "serverpact", "mcserverlist", "test", "unknown"
+    );
+
+    /**
+     * Processes a vote. If broadcast is false, the vote-received message is not sent
+     * (caller handles it, e.g. BotService sends operator-aware messages).
+     */
+    void processVote(String username, String serviceName, boolean broadcast) {
+        // Some vote sites send their own name as the username — ignore these
+        if (username == null || username.length() < 3 || username.length() > 16
+                || BOGUS_USERNAMES.contains(username.toLowerCase())
+                || !username.matches("[a-zA-Z0-9_]+")) {
+            plugin.getLogger().warning("Ignoring vote with invalid username: '" + username + "' from " + serviceName);
+            return;
+        }
+
         plugin.getLogger().info("Vote received for " + username + " from " + serviceName);
 
         Player player = Bukkit.getPlayerExact(username);
@@ -98,8 +120,10 @@ public final class VoteService implements Service {
             }
         }
 
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            Lang.send(online, "vote.received", "player", username);
+        if (broadcast) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                Lang.send(online, "vote.received", "player", username);
+            }
         }
     }
 

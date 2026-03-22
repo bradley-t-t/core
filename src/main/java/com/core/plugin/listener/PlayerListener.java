@@ -21,6 +21,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.Bukkit;
+import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -49,8 +50,19 @@ public final class PlayerListener implements Listener {
         statsService.recordFirstJoinIfNew(player.getUniqueId());
         statsService.loadPlayer(player.getUniqueId());
 
-        // First join: assign default rank and wild teleport
+        // Set join message
         boolean isFirstJoin = plugin.dataManager().getRank(player.getUniqueId()) == null;
+        if (isFirstJoin) {
+            event.joinMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+                    .legacySection().deserialize(MessageUtil.colorize(
+                            Lang.get("join.first", "player", player.getName()))));
+        } else {
+            event.joinMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+                    .legacySection().deserialize(MessageUtil.colorize(
+                            Lang.get("join.normal", "player", player.getName()))));
+        }
+
+        // First join: assign default rank and wild teleport
         if (isFirstJoin) {
             rankService.setRank(player.getUniqueId(), RankLevel.MEMBER);
 
@@ -69,6 +81,18 @@ public final class PlayerListener implements Listener {
                 inventory.setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
                 inventory.setLeggings(new ItemStack(Material.IRON_LEGGINGS));
                 inventory.setBoots(new ItemStack(Material.IRON_BOOTS));
+                // Claim wand (golden shovel with name/lore)
+                ItemStack claimWand = new ItemStack(Material.GOLDEN_SHOVEL);
+                ItemMeta wandMeta = claimWand.getItemMeta();
+                if (wandMeta != null) {
+                    wandMeta.setDisplayName(Lang.get("claim.wand-name"));
+                    wandMeta.setLore(java.util.List.of(
+                            Lang.get("claim.wand-lore-1"),
+                            Lang.get("claim.wand-lore-2")
+                    ));
+                    claimWand.setItemMeta(wandMeta);
+                }
+
                 inventory.addItem(
                         new ItemStack(Material.IRON_SWORD),
                         new ItemStack(Material.IRON_PICKAXE),
@@ -76,7 +100,8 @@ public final class PlayerListener implements Listener {
                         new ItemStack(Material.IRON_AXE),
                         new ItemStack(Material.COOKED_BEEF, 16),
                         new ItemStack(Material.TORCH, 8),
-                        new ItemStack(Material.MAP)
+                        new ItemStack(Material.MAP),
+                        claimWand
                 );
             }, 10L);
         }
@@ -97,7 +122,7 @@ public final class PlayerListener implements Listener {
 
         // Fake players may greet
         BotService fakeService = plugin.services().get(BotService.class);
-        if (fakeService != null) fakeService.onRealPlayerJoin(player.getName());
+        if (fakeService != null) fakeService.onRealPlayerJoin(player.getName(), isFirstJoin);
 
         // Bed spawn warning — on join and every 15 minutes
         if (!isFirstJoin && player.getBedSpawnLocation() == null) {
@@ -244,6 +269,16 @@ public final class PlayerListener implements Listener {
             event.setCancelled(true);
             Lang.send(event.getPlayer(), "freeze.cannot-move");
         }
+    }
+
+    @EventHandler
+    public void onBedEnter(PlayerBedEnterEvent event) {
+        if (event.getBedEnterResult() != PlayerBedEnterEvent.BedEnterResult.OK) return;
+
+        Player player = event.getPlayer();
+        player.setRespawnLocation(event.getBed().getLocation(), true);
+        Lang.send(player, "bed.spawn-set");
+        event.setCancelled(true);
     }
 
     private boolean hasActuallyMoved(PlayerMoveEvent event) {

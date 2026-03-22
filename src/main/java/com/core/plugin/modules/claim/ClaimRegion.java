@@ -69,6 +69,16 @@ public record ClaimRegion(
         return maxZ - minZ + 1;
     }
 
+    /** Returns a copy of this claim with new bounds, preserving ID, owner, name, trusted, and createdAt. */
+    public ClaimRegion withBounds(String world, int x1, int z1, int x2, int z2) {
+        return new ClaimRegion(
+                claimId, ownerId, name, world,
+                Math.min(x1, x2), Math.min(z1, z2),
+                Math.max(x1, x2), Math.max(z1, z2),
+                trustedPlayerIds, createdAt
+        );
+    }
+
     /** True if the player is the owner or is in the trusted set. */
     public boolean canInteract(UUID playerId) {
         return ownerId.equals(playerId) || trustedPlayerIds.contains(playerId);

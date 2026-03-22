@@ -17,7 +17,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "repair",
         aliases = {"fix"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Repair items in your inventory",
         usage = "/repair [all]",
         playerOnly = true,

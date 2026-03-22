@@ -14,7 +14,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "hat",
         aliases = {"head", "helmet"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.DIAMOND,
         description = "Wear the item in your hand as a hat",
         playerOnly = true,
         icon = Material.DIAMOND_HELMET

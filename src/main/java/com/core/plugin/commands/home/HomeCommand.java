@@ -17,7 +17,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "home",
         aliases = {"h"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Teleport to a home",
         usage = "/home [name]",
         playerOnly = true,

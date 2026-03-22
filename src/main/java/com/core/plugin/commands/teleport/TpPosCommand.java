@@ -18,7 +18,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "tppos",
         aliases = {"teleportpos", "tploc"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Teleport to specific coordinates",
         usage = "/tppos <x> <y> <z> [world]",
         playerOnly = true,

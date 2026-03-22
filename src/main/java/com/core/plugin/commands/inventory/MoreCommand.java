@@ -14,7 +14,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "more",
         aliases = {"stack"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Max out the stack size of the item in your hand",
         playerOnly = true,
         icon = Material.CHEST_MINECART

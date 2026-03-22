@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 
 ## [1.1] - 2026-03-22
 
+- Add tree felling module with animated falling, scanning for connected logs, and configurable settings
+- Add /rules command with a paginated GUI showing server rules
+- Add /discord command with clickable invite link
+- Add claim resizing support via /claim resize and the claim management GUI
+- Add bot name validation module to filter inappropriate or duplicate names
+- Expand bot service with AI-powered private message replies, dynamic join/leave scheduling, and configurable min/max online range
+- Add min, max, and range subcommands to /bots for controlling fake player counts at runtime
+- Improve bot chat engine with longer memory, more personality variety, and context-aware responses
+- Rework bot name generator to pull from a larger pool of realistic usernames
+- Update /msg and /reply to route messages to bots through the AI reply system with a 40% chance to ignore
+- Add bot status display to show min/max range alongside online and pool counts
+- Show hint to use /claim resize when a new claim overlaps the player's own existing claim
+- Add claim area and total area exceeded checks to the resize flow
+- Add overlap detection helpers to ClaimIndex and ClaimRegion
+- Add tree fell listener to handle block break events for the tree felling module
+- Expand ClaimWandListener with left-click support for selecting claim corner 1
+- Add join/quit message suppression for bot fake players in PlayerListener
+- Update BotTabListener to refresh the tab list header/footer with current fake player counts
+- Lower minimum rank for home, enderchest, invsee, more, repair, fly, feed, heal, and god commands from MODERATOR to OPERATOR
+- Lower minimum rank for hat and trash commands from MODERATOR to DIAMOND
+- Lower minimum rank for nick command from MODERATOR to DIAMOND
+- Add vote streak tracking and streak-based reward multipliers to VoteService
+- Add mute checking to PunishmentService
+- Update BotUtil with helper methods for fake player UUID generation
+- Add new language entries for discord, rules, claim resizing, bot range controls, and tree felling
+- Add tree felling and discord config sections to config.yml
+
+## [1.1] - 2026-03-22
+
 - Introduced a Module abstraction with a new base Module class and concrete implementations for each domain: BotsModule, ClaimModule, GuiModule, PunishmentModule, RankModule, and VoteModule
 - Reorganized domain classes under a new `modules` package (bots, claim, gui, punishment, rank, vote)
 - Consolidated all service classes into the `service` package, moving RankService, ClaimService, and VoteService from their respective domain packages

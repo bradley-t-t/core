@@ -6,6 +6,9 @@
 # Protects against data loss from crashes. Set to 0 to disable.
 auto-save-interval-minutes: 5
 
+# Discord invite link shown by /discord
+discord-url: "https://discord.gg/g5AkS6Gpm4"
+
 # Server list MOTD shown in the multiplayer menu.
 # Supports & color codes. Use \n for line breaks.
 # Set to "" to use the default server.properties MOTD.
@@ -42,6 +45,9 @@ fake-players:
   max-session-minutes: 480
   # How often (in seconds) the system considers joining/leaving a fake player.
   cycle-interval-seconds: 60
+  # How many times each bot votes per day (per vote site link).
+  # Bots vote in clusters of 2-3 throughout the day to look natural.
+  vote-link-count: 1
   # Grok API key for AI-generated chat. Leave empty to use static messages.
   # Get a key at https://console.x.ai/
   grok-api-key: ""
@@ -71,12 +77,27 @@ claims:
   prevent-mob-spawning: false
   particle-render-distance: 64
 
+# Tree felling system - realistic tree chopping
+tree-felling:
+  enabled: true
+  # Max logs a tree can have before it's considered a build (not a tree)
+  max-logs: 128
+  # Minimum leaf-to-log ratio for natural tree validation.
+  # Natural trees have ~2-4x leaves per log. Builds have few or none.
+  min-leaf-ratio: 1.0
+  # Ticks between each layer breaking (2 ticks = 0.1 seconds)
+  ticks-per-layer: 2
+
 # Vote system
 voting:
   enabled: true
   port: 27917
-  # URL shown to players with /vote
-  vote-url: "https://example.com/vote"
+  # Vote links shown to players with /vote. Add as many as needed.
+  vote-links:
+    - name: "MinecraftServers.org"
+      url: "https://example.com/vote1"
+    - name: "PlanetMinecraft"
+      url: "https://example.com/vote2"
   # Rewards per vote
   rewards:
     xp-levels: 5

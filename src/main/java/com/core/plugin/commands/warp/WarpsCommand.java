@@ -23,7 +23,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "warps",
         aliases = {"listwarps"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "List all warps",
         usage = "/warps",
         icon = Material.END_PORTAL_FRAME

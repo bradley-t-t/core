@@ -25,11 +25,20 @@ public final class BotPool {
     private final File dataFile;
     private final List<String> names = new ArrayList<>();
     private final Random random = new Random();
+    private BotNameValidator validator;
     private boolean enabled;
 
     public BotPool(CorePlugin plugin) {
         this.plugin = plugin;
         this.dataFile = new File(plugin.getDataFolder(), "fakeplayers.yml");
+    }
+
+    public void setValidator(BotNameValidator validator) {
+        this.validator = validator;
+    }
+
+    public BotNameValidator getValidator() {
+        return validator;
     }
 
     /** Load the pool from disk and auto-size if needed. */
@@ -183,6 +192,51 @@ public final class BotPool {
             }
         }
         return null;
+    }
+
+    /**
+     * Replaces any names in the pool that the validator has flagged as invalid
+     * (no real Mojang account). Invalid names that are currently online are skipped
+     * and will be replaced next cycle.
+     *
+     * @param onlineNames names currently online (won't be replaced mid-session)
+     * @return newly added replacement names (caller should assign traits)
+     */
+    public List<String> replaceInvalidNames(Set<String> onlineNames) {
+        if (validator == null) return List.of();
+
+        Set<String> invalid = validator.getInvalidNames();
+        if (invalid.isEmpty()) return List.of();
+
+        List<String> toReplace = names.stream()
+                .filter(invalid::contains)
+                .filter(name -> !onlineNames.contains(name))
+                .toList();
+
+        if (toReplace.isEmpty()) return List.of();
+
+        BotNameGenerator generator = new BotNameGenerator();
+        Set<String> existing = new HashSet<>(names);
+        List<String> newNames = new ArrayList<>();
+
+        for (String retiring : toReplace) {
+            String replacement = generateUniqueName(generator, existing);
+            if (replacement == null) break;
+
+            names.remove(retiring);
+            existing.remove(retiring);
+            names.add(replacement);
+            existing.add(replacement);
+            newNames.add(replacement);
+        }
+
+        if (!newNames.isEmpty()) {
+            save();
+            plugin.getLogger().info("Replaced " + newNames.size()
+                    + " invalid bot names with real Minecraft accounts.");
+        }
+
+        return newNames;
     }
 
     private void save() {

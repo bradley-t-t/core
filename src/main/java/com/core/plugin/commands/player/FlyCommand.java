@@ -17,7 +17,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "fly",
         aliases = {"flight"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Toggle flight for a player",
         usage = "/fly [player]",
         icon = Material.ELYTRA

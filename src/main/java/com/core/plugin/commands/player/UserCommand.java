@@ -83,7 +83,7 @@ public final class UserCommand extends BaseCommand {
                 .fill(GlassPane.gray());
 
         // === Row 0: Player head with summary ===
-        builder.item(4, buildSkullItem(offlineTarget, resolvedName, isOnline, rank));
+        builder.item(4, buildSkullItem(isBot ? null : offlineTarget, resolvedName, isOnline, rank));
 
         // === Row 1: Core info ===
         // Rank
@@ -221,10 +221,12 @@ public final class UserCommand extends BaseCommand {
 
     private GuiItem buildSkullItem(OfflinePlayer target, String name, boolean isOnline, Rank rank) {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta meta = (SkullMeta) skull.getItemMeta();
-        if (meta != null) {
-            meta.setOwningPlayer(target);
-            skull.setItemMeta(meta);
+        if (target != null) {
+            SkullMeta meta = (SkullMeta) skull.getItemMeta();
+            if (meta != null) {
+                meta.setOwningPlayer(target);
+                skull.setItemMeta(meta);
+            }
         }
 
         return GuiItem.of(skull)

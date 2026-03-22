@@ -16,7 +16,7 @@ import java.util.List;
 @CommandInfo(
         name = "delhome",
         aliases = {"removehome", "rmhome"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Delete a home",
         usage = "/delhome <name>",
         playerOnly = true,

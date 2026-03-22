@@ -76,6 +76,32 @@ public final class ClaimIndex {
         return false;
     }
 
+    /** True if any existing claim (other than the excluded one) overlaps the candidate region. */
+    public boolean hasOverlapExcluding(ClaimRegion candidate, UUID excludeClaimId) {
+        var chunkMap = worldChunkMap.get(candidate.worldName());
+        if (chunkMap == null) return false;
+
+        int minChunkX = candidate.minX() >> 4;
+        int maxChunkX = candidate.maxX() >> 4;
+        int minChunkZ = candidate.minZ() >> 4;
+        int maxChunkZ = candidate.maxZ() >> 4;
+
+        Set<UUID> checked = new HashSet<>();
+        for (int cx = minChunkX; cx <= maxChunkX; cx++) {
+            for (int cz = minChunkZ; cz <= maxChunkZ; cz++) {
+                var candidates = chunkMap.get(chunkKey(cx, cz));
+                if (candidates == null) continue;
+                for (ClaimRegion existing : candidates) {
+                    if (existing.claimId().equals(excludeClaimId)) continue;
+                    if (checked.add(existing.claimId()) && existing.overlaps(candidate)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     /** Removes all claims from the index. */
     public void clear() {
         worldChunkMap.clear();

@@ -19,7 +19,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "vanish",
         aliases = {"v", "invisible", "vis"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Toggle vanish for a player",
         usage = "/vanish [player]",
         icon = Material.GLASS

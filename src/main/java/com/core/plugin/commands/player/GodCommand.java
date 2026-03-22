@@ -18,7 +18,7 @@ import java.util.List;
 @CommandInfo(
         name = "god",
         aliases = {"godmode", "invincible"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Toggle god mode for a player",
         usage = "/god [player]",
         icon = Material.TOTEM_OF_UNDYING

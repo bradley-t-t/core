@@ -6,6 +6,11 @@
 
 prefix: "&7[&eCore&7] &f"
 
+# ---- Join Messages ----
+join:
+  normal: "&e{player} joined the game"
+  first: "&e{player} &6joined for the first time! &eWelcome!"
+
 # ---- Generic / Shared ----
 generic:
   no-permission: "&fYou don't have permission to use this command."
@@ -237,6 +242,7 @@ punish:
   history-entry-active: "&eActive"
   history-entry-expired: "&7Expired"
   no-history: "&7No punishment history."
+  staff-broadcast: "&8[&cStaff&8] &f{moderator} &7applied &e{type} &7to &f{player} &7({duration}) &8- &f{reason}"
 
 gamemode:
   set: "&fGamemode set to &e{mode}&f."
@@ -350,6 +356,7 @@ near:
 # ---- Bed Spawn ----
 bed:
   no-spawn-warning: "&fYou do not have a bed spawn set. If you die, you will respawn at a &erandom location&f. Place a bed and sleep in it to set your spawn."
+  spawn-set: "&fYour spawn point has been set."
 
 # ---- Death Messages ----
 death:
@@ -439,7 +446,11 @@ fakeplayers:
   disabled: "&fFake player system &7disabled&f. Players will leave gradually."
   already-on: "&fFake player system is already enabled."
   already-off: "&fFake player system is already disabled."
-  status: "&fFake players: &e{state} &7(&f{online} &7online, &f{pool} &7in pool)"
+  status: "&fFake players: &e{state} &7(&f{online} &7online, &f{pool} &7in pool, &f{min}&7-&f{max} &7range)"
+  range: "&fFake player range: &e{min}&7-&e{max}"
+  min-set: "&fMinimum online bots set to &e{value}&f."
+  max-set: "&fMaximum online bots set to &e{value}&f."
+  range-set: "&fBot range set to &e{min}&7-&e{max}&f."
 
 # ---- Player List ----
 list:
@@ -493,6 +504,10 @@ claim:
   view-item: "&eView Borders"
   delete-item: "&7Delete Claim"
   viewing: "&fShowing borders for &e{name}&f."
+  resized: "&fClaim &e{name} &fresized. &7({area} blocks)"
+  resize-select: "&fSelect new corners with the claim wand, then run &e/claim resize {name}&f."
+  overlaps-own: "&fYour selection overlaps your claim &e{name}&f. Use &e/claim resize {name} &fto resize it."
+  resize-hint: "&7To resize &e{name}&7, run &e/claim resize {name}"
 
 # ---- Voting ----
 vote:
@@ -500,8 +515,16 @@ vote:
   thank-you: "&fThank you for voting! You received your rewards."
   pending: "&fYou had &e{count} &fpending vote reward(s). Delivered!"
   count: "&fYou have voted &e{count} &ftime(s)."
+  header: "&e&lVote Links &7(click to open)"
+  link: " &8» &f{name}: &e{url}"
+  link-hover: "&7Click to vote on &f{name}"
   url: "&fVote for us: &e{url}"
   url-click: "&7Click to open"
+
+# ---- Discord ----
+discord:
+  link: "&fJoin our Discord: &b&n[Click Here]"
+  hover: "&7Click to join our Discord server"
 
 # ---- Core Admin ----
 core:

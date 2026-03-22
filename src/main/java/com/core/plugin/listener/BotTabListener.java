@@ -1,8 +1,11 @@
 package com.core.plugin.listener;
 
 import com.core.plugin.CorePlugin;
+import com.core.plugin.modules.rank.RankLevel;
 import com.core.plugin.service.BotService;
+import com.core.plugin.service.RankService;
 import com.core.plugin.util.BotUtil;
+import com.core.plugin.util.MessageUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -37,11 +40,14 @@ public final class BotTabListener implements Listener {
         }, 10L);
     }
 
-    public void addFake(String name, String displayName) {
+    public void addFake(String name, String displayName, BotService botService) {
         UUID uuid = BotUtil.fakeUuid(name);
         injectedUuids.add(uuid);
+        RankService rankService = plugin.services().get(RankService.class);
         for (Player player : Bukkit.getOnlinePlayers()) {
-            sendAdd(player, uuid, name, displayName);
+            boolean isOp = rankService != null
+                    && rankService.getLevel(player.getUniqueId()).isAtLeast(RankLevel.OPERATOR);
+            sendAdd(player, uuid, name, isOp ? MessageUtil.colorize("&7*") + displayName : displayName);
         }
     }
 
@@ -67,7 +73,7 @@ public final class BotTabListener implements Listener {
         if (botService == null || !botService.isEnabled()) return;
 
         int totalOnline = botService.getTotalOnlineCount();
-        Component header = Component.text("Core Survival", NamedTextColor.YELLOW);
+        Component header = Component.text("Core Minecraft", NamedTextColor.YELLOW);
         Component footer = Component.text("Online: ", NamedTextColor.GRAY)
                 .append(Component.text(totalOnline, NamedTextColor.WHITE));
 
@@ -87,10 +93,15 @@ public final class BotTabListener implements Listener {
         BotService botService = plugin.services().get(BotService.class);
         if (botService == null || !botService.isEnabled() || !player.isOnline()) return;
 
+        RankService rankService = plugin.services().get(RankService.class);
+        boolean isOp = rankService != null
+                && rankService.getLevel(player.getUniqueId()).isAtLeast(RankLevel.OPERATOR);
+
         for (String fakeName : botService.getOnlineFakes()) {
             UUID uuid = BotUtil.fakeUuid(fakeName);
             injectedUuids.add(uuid);
-            sendAdd(player, uuid, fakeName, botService.getDisplayName(fakeName));
+            String display = botService.getDisplayName(fakeName);
+            sendAdd(player, uuid, fakeName, isOp ? MessageUtil.colorize("&7*") + display : display);
         }
     }
 

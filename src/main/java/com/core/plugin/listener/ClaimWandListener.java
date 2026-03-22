@@ -84,6 +84,19 @@ public final class ClaimWandListener implements Listener {
 
             Lang.actionBar(player, "claim.selection-area",
                     "width", width, "length", length, "area", width * length);
+
+            // If selection overlaps the player's own claim, hint to use /claim resize
+            ClaimRegion atCorner1 = claimService.getClaimAt(c1);
+            ClaimRegion atCorner2 = claimService.getClaimAt(c2);
+            ClaimRegion ownOverlap = null;
+            if (atCorner1 != null && atCorner1.ownerId().equals(player.getUniqueId())) {
+                ownOverlap = atCorner1;
+            } else if (atCorner2 != null && atCorner2.ownerId().equals(player.getUniqueId())) {
+                ownOverlap = atCorner2;
+            }
+            if (ownOverlap != null) {
+                Lang.send(player, "claim.resize-hint", "name", ownOverlap.name());
+            }
         }
 
         startShovelCheck(player, claimService);

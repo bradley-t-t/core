@@ -16,7 +16,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "trash",
         aliases = {"disposal", "bin", "garbage"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.DIAMOND,
         description = "Open a disposal inventory",
         playerOnly = true,
         icon = Material.LAVA_BUCKET

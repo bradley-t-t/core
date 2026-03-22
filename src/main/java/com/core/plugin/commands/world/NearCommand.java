@@ -14,7 +14,7 @@ import java.util.List;
 @CommandInfo(
         name = "near",
         aliases = {"nearby"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "List nearby players",
         usage = "/near [radius]",
         playerOnly = true,

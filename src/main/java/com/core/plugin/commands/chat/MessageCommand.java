@@ -5,6 +5,7 @@ import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
 import com.core.plugin.lang.Lang;
+import com.core.plugin.service.BotService;
 import com.core.plugin.service.PlayerStateService;
 import com.core.plugin.util.PlayerUtil;
 import org.bukkit.Bukkit;
@@ -14,6 +15,7 @@ import com.core.plugin.modules.rank.RankLevel;
 
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 @CommandInfo(
         name = "msg",
@@ -26,9 +28,12 @@ import java.util.Random;
 )
 public final class MessageCommand extends BaseCommand {
 
-    private static final String[] FAKE_REPLIES = {
+    /** Fallback replies if the AI engine is unavailable. */
+    private static final String[] FALLBACK_REPLIES = {
             "hey", "whats up", "yeah?", "hm?", "one sec",
             "busy rn", "oh hey", "sup", "lol what", "?",
+            "cant talk rn", "who is this", "hey whats up",
+            "oh hey man", "im busy doing something rn",
     };
 
     private static final Random RANDOM = new Random();
@@ -49,14 +54,27 @@ public final class MessageCommand extends BaseCommand {
             if (context.isPlayer()) {
                 Player sender = (Player) context.sender();
                 PlayerStateService stateService = service(PlayerStateService.class);
-                stateService.setLastMessager(sender.getUniqueId(), sender.getUniqueId());
+                stateService.setLastMessager(sender.getUniqueId(),
+                        com.core.plugin.util.BotUtil.fakeUuid(targetName));
 
-                long delay = 40 + RANDOM.nextInt(80);
-                Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    if (!sender.isOnline()) return;
-                    String reply = FAKE_REPLIES[RANDOM.nextInt(FAKE_REPLIES.length)];
-                    Lang.sendRaw(sender, "msg.received", "sender", targetName, "message", reply);
-                }, delay);
+                // 40% chance the bot just doesn't reply (like a real player)
+                if (RANDOM.nextInt(100) < 40) return;
+
+                // Try AI-generated reply, fall back to canned response
+                BotService botService = service(BotService.class);
+                if (botService != null) {
+                    botService.generatePrivateReply(targetName, senderName, message, reply -> {
+                        if (!sender.isOnline()) return;
+                        Lang.sendRaw(sender, "msg.received", "sender", targetName, "message", reply);
+                    });
+                } else {
+                    long delay = 40 + RANDOM.nextInt(80);
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        if (!sender.isOnline()) return;
+                        String reply = FALLBACK_REPLIES[RANDOM.nextInt(FALLBACK_REPLIES.length)];
+                        Lang.sendRaw(sender, "msg.received", "sender", targetName, "message", reply);
+                    }, delay);
+                }
             }
             return;
         }

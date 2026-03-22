@@ -14,7 +14,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "sethome",
         aliases = {"createhome"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Set a home at your current location",
         usage = "/sethome [name]",
         playerOnly = true,

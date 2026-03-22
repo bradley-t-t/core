@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 @CommandInfo(
         name = "top",
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Teleport to the highest block at your position",
         usage = "/top",
         playerOnly = true,

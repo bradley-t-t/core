@@ -18,7 +18,7 @@ import java.util.List;
 @CommandInfo(
         name = "tp",
         aliases = {"teleport"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Teleport to a player or coordinates",
         usage = "/tp <player> [target] or /tp <player> <x> <y> <z>",
         minArgs = 1,

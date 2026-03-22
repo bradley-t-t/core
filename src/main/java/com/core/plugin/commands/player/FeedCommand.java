@@ -17,7 +17,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "feed",
         aliases = {"eat", "satiate"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Restore a player's hunger",
         usage = "/feed [player]",
         icon = Material.COOKED_BEEF

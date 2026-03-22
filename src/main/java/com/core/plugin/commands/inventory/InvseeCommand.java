@@ -16,7 +16,7 @@ import java.util.List;
 @CommandInfo(
         name = "invsee",
         aliases = {"inventory", "openinv"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "View another player's inventory",
         usage = "/invsee <player>",
         playerOnly = true,

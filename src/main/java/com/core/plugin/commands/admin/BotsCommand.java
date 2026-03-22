@@ -74,15 +74,55 @@ public final class BotsCommand extends BaseCommand {
                     botService.removeFromPool(name);
                     Lang.send(context.sender(), "fakeplayers.removed", "player", name);
                 }
+                case "min" -> {
+                    if (!context.hasArg(1)) {
+                        Lang.send(context.sender(), "fakeplayers.range",
+                                "min", botService.getMinOnline(), "max", botService.getMaxOnline());
+                        return;
+                    }
+                    int min = context.argInt(1, -1);
+                    if (min < 0) { Lang.send(context.sender(), "generic.invalid-number"); return; }
+                    botService.setMinOnline(min);
+                    Lang.send(context.sender(), "fakeplayers.min-set", "value", min);
+                }
+                case "max" -> {
+                    if (!context.hasArg(1)) {
+                        Lang.send(context.sender(), "fakeplayers.range",
+                                "min", botService.getMinOnline(), "max", botService.getMaxOnline());
+                        return;
+                    }
+                    int max = context.argInt(1, -1);
+                    if (max < 0) { Lang.send(context.sender(), "generic.invalid-number"); return; }
+                    botService.setMaxOnline(max);
+                    Lang.send(context.sender(), "fakeplayers.max-set", "value", max);
+                }
+                case "range" -> {
+                    if (!context.hasArg(2)) {
+                        Lang.send(context.sender(), "fakeplayers.range",
+                                "min", botService.getMinOnline(), "max", botService.getMaxOnline());
+                        return;
+                    }
+                    int min = context.argInt(1, -1);
+                    int max = context.argInt(2, -1);
+                    if (min < 0 || max < 0 || min > max) {
+                        Lang.send(context.sender(), "generic.invalid-number");
+                        return;
+                    }
+                    botService.setMinOnline(min);
+                    botService.setMaxOnline(max);
+                    Lang.send(context.sender(), "fakeplayers.range-set", "min", min, "max", max);
+                }
                 case "status" -> Lang.send(context.sender(), "fakeplayers.status",
                         "state", botService.isEnabled() ? "enabled" : "disabled",
                         "online", botService.getOnlineFakes().size(),
-                        "pool", botService.getPlayerPool().size());
+                        "pool", botService.getPlayerPool().size(),
+                        "min", botService.getMinOnline(),
+                        "max", botService.getMaxOnline());
                 default -> openGuiIfPlayer(context, botService);
             }
 
             // Only fall through to GUI for known commands that consumed the arg
-            if (Set.of("on", "enable", "off", "disable", "add", "remove", "status").contains(action)) {
+            if (Set.of("on", "enable", "off", "disable", "add", "remove", "status", "min", "max", "range").contains(action)) {
                 return;
             }
         }
@@ -132,7 +172,7 @@ public final class BotsCommand extends BaseCommand {
     @Override
     protected List<String> complete(CommandContext context) {
         if (context.argsLength() == 1) {
-            return List.of("on", "off", "status", "add", "remove");
+            return List.of("on", "off", "status", "add", "remove", "min", "max", "range");
         }
         if (context.argsLength() == 2 && "remove".equalsIgnoreCase(context.arg(0))) {
             BotService botService = service(BotService.class);

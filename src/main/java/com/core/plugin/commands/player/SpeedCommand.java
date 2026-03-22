@@ -17,7 +17,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "speed",
         aliases = {"walkspeed", "flyspeed"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Set walk and fly speed",
         usage = "/speed <1-10> [player]",
         minArgs = 1,

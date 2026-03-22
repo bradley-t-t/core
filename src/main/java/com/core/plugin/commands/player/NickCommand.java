@@ -19,7 +19,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "nick",
         aliases = {"nickname", "name"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.DIAMOND,
         description = "Set or clear a player's nickname",
         usage = "/nick <name|off> [player]",
         minArgs = 1,

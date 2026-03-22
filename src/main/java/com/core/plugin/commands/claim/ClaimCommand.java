@@ -38,12 +38,12 @@ import java.util.stream.Stream;
         minRank = RankLevel.MEMBER,
         playerOnly = true,
         description = "Create or manage land claims",
-        usage = "/claim [create|list|view|info|delete|wand] <name>",
+        usage = "/claim [create|list|view|info|resize|delete|wand] <name>",
         icon = Material.GOLDEN_SHOVEL
 )
 public final class ClaimCommand extends BaseCommand {
 
-    private static final List<String> SUBCOMMANDS = List.of("create", "list", "view", "info", "delete", "wand");
+    private static final List<String> SUBCOMMANDS = List.of("create", "list", "view", "info", "delete", "resize", "wand");
 
     public ClaimCommand(CorePlugin plugin) {
         super(plugin);
@@ -65,6 +65,7 @@ public final class ClaimCommand extends BaseCommand {
                 case "view" -> handleView(player, context.hasArg(1) ? context.arg(1) : null);
                 case "info" -> handleInfo(player, context.hasArg(1) ? context.arg(1) : null);
                 case "delete" -> handleDelete(player, context.hasArg(1) ? context.arg(1) : null);
+                case "resize" -> handleResize(player, context.hasArg(1) ? context.arg(1) : null);
                 case "wand" -> handleWand(player);
             }
             return;
@@ -110,7 +111,7 @@ public final class ClaimCommand extends BaseCommand {
         if (context.argsLength() == 2 && player != null) {
             String sub = context.arg(0).toLowerCase();
             // Subcommands that accept a claim name as second arg
-            if (sub.equals("view") || sub.equals("info") || sub.equals("delete")) {
+            if (sub.equals("view") || sub.equals("info") || sub.equals("delete") || sub.equals("resize")) {
                 String prefix = context.arg(1).toLowerCase();
                 return claimService.getClaimNames(player.getUniqueId()).stream()
                         .filter(n -> n.toLowerCase().startsWith(prefix))
@@ -146,7 +147,19 @@ public final class ClaimCommand extends BaseCommand {
             case TOO_SMALL -> Lang.send(player, "claim.too-small",
                     "min", plugin.getConfig().getInt("claims.min-claim-size", 5));
             case TOO_MANY_CLAIMS -> Lang.send(player, "claim.too-many", "max", claimService.getMaxClaims(rank));
-            case OVERLAPS -> Lang.send(player, "claim.overlaps");
+            case OVERLAPS -> {
+                // Check if the overlap is with the player's own claim — hint to use resize
+                ClaimSelection sel = claimService.getOrCreateSelection(player.getUniqueId());
+                if (sel.isComplete() && sel.getCorner1().getWorld() != null) {
+                    ClaimRegion overlapping = claimService.getClaimAt(sel.getCorner1());
+                    if (overlapping == null) overlapping = claimService.getClaimAt(sel.getCorner2());
+                    if (overlapping != null && overlapping.ownerId().equals(player.getUniqueId())) {
+                        Lang.send(player, "claim.overlaps-own", "name", overlapping.name());
+                        return;
+                    }
+                }
+                Lang.send(player, "claim.overlaps");
+            }
             case DIFFERENT_WORLDS -> Lang.send(player, "claim.different-worlds");
             case INCOMPLETE -> Lang.send(player, "claim.incomplete");
             case TOTAL_AREA_EXCEEDED -> Lang.send(player, "claim.total-area-exceeded",
@@ -245,6 +258,25 @@ public final class ClaimCommand extends BaseCommand {
                     Lang.send(player, "claim.viewing", "name", claim.name());
                     SoundUtil.success(player);
                 }));
+
+        // Slot 15: Resize Claim
+        if (claim.ownerId().equals(player.getUniqueId())) {
+            builder.item(15, GuiItem.of(Material.ANVIL)
+                    .name("&eResize")
+                    .lore("&7Re-select the bounds for this claim",
+                            "",
+                            "&7Use the claim wand to select new",
+                            "&7corners, then click here to confirm")
+                    .onClick(event -> {
+                        player.closeInventory();
+                        ClaimSelection selection = claimService.getOrCreateSelection(player.getUniqueId());
+                        if (!selection.isComplete()) {
+                            Lang.send(player, "claim.resize-select", "name", claim.name());
+                            return;
+                        }
+                        handleResize(player, claim.name());
+                    }));
+        }
 
         // Slot 16: Delete Claim
         builder.item(16, GuiItem.of(Material.BARRIER)
@@ -380,6 +412,59 @@ public final class ClaimCommand extends BaseCommand {
         claimService.visualizer().cancelAll(player.getUniqueId());
         Lang.send(player, "claim.deleted", "name", claim.name());
         SoundUtil.success(player);
+    }
+
+    private void handleResize(Player player, String claimName) {
+        ClaimService claimService = service(ClaimService.class);
+        ClaimRegion claim;
+
+        if (claimName != null && !claimName.isBlank()) {
+            claim = claimService.getClaimByName(player.getUniqueId(), claimName);
+            if (claim == null) {
+                Lang.send(player, "claim.not-found", "name", claimName);
+                return;
+            }
+        } else {
+            claim = claimService.getClaimAt(player.getLocation());
+            if (claim == null) {
+                Lang.send(player, "claim.not-in-claim");
+                return;
+            }
+        }
+
+        if (!claim.ownerId().equals(player.getUniqueId())
+                && !hasMinRank(player, RankLevel.OPERATOR)) {
+            Lang.send(player, "claim.not-your-claim");
+            return;
+        }
+
+        // Check selection completeness before calling service — give resize-specific message
+        ClaimSelection selection = claimService.getOrCreateSelection(player.getUniqueId());
+        if (!selection.isComplete()) {
+            Lang.send(player, "claim.resize-select", "name", claim.name());
+            return;
+        }
+
+        RankLevel rank = service(com.core.plugin.service.RankService.class).getLevel(player.getUniqueId());
+        ClaimService.CreateResult result = claimService.resizeClaim(player.getUniqueId(), claim, selection);
+
+        switch (result) {
+            case SUCCESS -> {
+                ClaimRegion resized = claimService.getClaimByName(player.getUniqueId(), claim.name());
+                int area = resized != null ? resized.area() : 0;
+                Lang.send(player, "claim.resized", "name", claim.name(), "area", area);
+                if (resized != null) claimService.visualizer().flashClaim(player, resized);
+                SoundUtil.success(player);
+            }
+            case TOO_LARGE -> Lang.send(player, "claim.too-large", "max", claimService.getMaxArea(rank));
+            case TOO_SMALL -> Lang.send(player, "claim.too-small",
+                    "min", plugin.getConfig().getInt("claims.min-claim-size", 5));
+            case OVERLAPS -> Lang.send(player, "claim.overlaps");
+            case DIFFERENT_WORLDS -> Lang.send(player, "claim.different-worlds");
+            case TOTAL_AREA_EXCEEDED -> Lang.send(player, "claim.total-area-exceeded",
+                    "max", claimService.getMaxTotalArea(rank));
+            default -> {}
+        }
     }
 
     private void handleWand(Player player) {

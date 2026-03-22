@@ -16,7 +16,7 @@ import java.util.List;
 @CommandInfo(
         name = "enderchest",
         aliases = {"ec", "echest"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Open your or another player's ender chest",
         usage = "/ec [player]",
         playerOnly = true,

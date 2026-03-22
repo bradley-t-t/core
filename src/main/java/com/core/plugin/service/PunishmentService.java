@@ -4,9 +4,11 @@ import com.core.plugin.CorePlugin;
 import com.core.plugin.data.DataManager;
 import com.core.plugin.lang.Lang;
 import com.core.plugin.modules.punishment.*;
+import com.core.plugin.modules.rank.RankLevel;
 import com.core.plugin.util.SoundUtil;
 import com.core.plugin.util.TimeUtil;
 import org.bukkit.BanList;
+import com.core.plugin.service.BotService;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -79,6 +81,7 @@ public final class PunishmentService implements Service {
 
         dataManager.addPunishment(session.targetId(), record);
         applyPunishment(record, target, moderator);
+        broadcastToStaff(record, moderatorName);
         clearSession(session.moderatorId());
     }
 
@@ -90,6 +93,18 @@ public final class PunishmentService implements Service {
         String durationDisplay = record.durationMillis() == -1
                 ? "Permanent"
                 : TimeUtil.formatDuration(record.durationMillis());
+
+        // Handle bot targets
+        BotService botService = plugin.services().get(BotService.class);
+        if (botService != null && botService.isFake(record.targetName())) {
+            botService.onBotPunished(record.targetName(), record.typeKey(), record.durationMillis());
+            if (moderator != null) {
+                Lang.send(moderator, "punish.executed",
+                        "player", record.targetName(), "type", record.typeKey(),
+                        "severity", record.severity(), "reason", record.reason());
+            }
+            return;
+        }
 
         switch (record.typeKey()) {
             case "warn" -> applyWarn(record, target, moderator);
@@ -141,6 +156,26 @@ public final class PunishmentService implements Service {
             Lang.send(moderator, "punish.executed",
                     "player", record.targetName(), "type", "Ban",
                     "severity", record.severity(), "reason", record.reason());
+        }
+    }
+
+    /** Announce the punishment to all online moderators and above. */
+    private void broadcastToStaff(PunishmentRecord record, String moderatorName) {
+        String durationDisplay = record.durationMillis() == -1
+                ? "Permanent"
+                : TimeUtil.formatDuration(record.durationMillis());
+
+        RankService rankService = plugin.services().get(RankService.class);
+        if (rankService == null) return;
+
+        for (Player staff : Bukkit.getOnlinePlayers()) {
+            if (!rankService.getLevel(staff.getUniqueId()).isAtLeast(RankLevel.MODERATOR)) continue;
+            Lang.send(staff, "punish.staff-broadcast",
+                    "moderator", moderatorName,
+                    "type", record.typeKey(),
+                    "player", record.targetName(),
+                    "duration", durationDisplay,
+                    "reason", record.reason());
         }
     }
 }

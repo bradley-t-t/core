@@ -12,7 +12,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "tpdeny",
         aliases = {"tpno", "tprefuse"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Deny a pending TPA request",
         usage = "/tpdeny",
         playerOnly = true,

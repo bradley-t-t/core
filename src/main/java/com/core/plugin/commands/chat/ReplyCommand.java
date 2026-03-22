@@ -5,7 +5,9 @@ import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
 import com.core.plugin.lang.Lang;
+import com.core.plugin.service.BotService;
 import com.core.plugin.service.PlayerStateService;
+import com.core.plugin.util.BotUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -42,13 +44,35 @@ public final class ReplyCommand extends BaseCommand {
             return;
         }
 
+        String message = context.joinArgs(0);
+
+        // Check if replying to a bot
+        BotService botService = service(BotService.class);
+        if (botService != null) {
+            String botName = botService.getOnlineFakes().stream()
+                    .filter(name -> BotUtil.fakeUuid(name).equals(lastId))
+                    .findFirst().orElse(null);
+
+            if (botName != null) {
+                Lang.sendRaw(sender, "msg.sent", "target", botName, "message", message);
+
+                // Same logic as MessageCommand: 40% chance to ignore
+                java.util.Random rng = new java.util.Random();
+                if (rng.nextInt(100) >= 40) {
+                    botService.generatePrivateReply(botName, sender.getName(), message, reply -> {
+                        if (!sender.isOnline()) return;
+                        Lang.sendRaw(sender, "msg.received", "sender", botName, "message", reply);
+                    });
+                }
+                return;
+            }
+        }
+
         Player target = Bukkit.getPlayer(lastId);
         if (target == null) {
             Lang.send(sender, "msg.reply-offline");
             return;
         }
-
-        String message = context.joinArgs(0);
 
         Lang.sendRaw(sender, "msg.sent", "target", target.getName(), "message", message);
         Lang.sendRaw(target, "msg.received", "sender", sender.getName(), "message", message);

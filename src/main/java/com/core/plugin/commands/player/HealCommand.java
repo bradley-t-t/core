@@ -18,7 +18,7 @@ import java.util.List;
 @CommandInfo(
         name = "heal",
         aliases = {"hp"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Heal a player to full health",
         usage = "/heal [player]",
         icon = Material.GOLDEN_APPLE

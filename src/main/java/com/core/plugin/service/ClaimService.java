@@ -122,6 +122,64 @@ public final class ClaimService implements Service {
         return CreateResult.SUCCESS;
     }
 
+    /** Resizes an existing claim to match the player's current selection. */
+    public CreateResult resizeClaim(UUID playerId, ClaimRegion existing, ClaimSelection selection) {
+        if (!selection.isComplete()) return CreateResult.INCOMPLETE;
+
+        Location c1 = selection.getCorner1();
+        Location c2 = selection.getCorner2();
+        if (c1.getWorld() == null || !c1.getWorld().equals(c2.getWorld())) {
+            return CreateResult.DIFFERENT_WORLDS;
+        }
+
+        ClaimRegion candidate = existing.withBounds(
+                c1.getWorld().getName(),
+                c1.getBlockX(), c1.getBlockZ(),
+                c2.getBlockX(), c2.getBlockZ()
+        );
+
+        int minSize = plugin.getConfig().getInt("claims.min-claim-size", 5);
+        if (candidate.width() < minSize || candidate.length() < minSize) {
+            return CreateResult.TOO_SMALL;
+        }
+
+        RankLevel rank = getPlayerRank(playerId);
+        int maxArea = getMaxArea(rank);
+        if (maxArea > 0 && candidate.area() > maxArea) {
+            return CreateResult.TOO_LARGE;
+        }
+
+        int maxTotalArea = getMaxTotalArea(rank);
+        if (maxTotalArea > 0) {
+            int otherTotal = getPlayerClaims(playerId).stream()
+                    .filter(c -> !c.claimId().equals(existing.claimId()))
+                    .mapToInt(ClaimRegion::area).sum();
+            if (otherTotal + candidate.area() > maxTotalArea) {
+                return CreateResult.TOTAL_AREA_EXCEEDED;
+            }
+        }
+
+        if (index.hasOverlapExcluding(candidate, existing.claimId())) {
+            return CreateResult.OVERLAPS;
+        }
+
+        // Swap old region for new one
+        index.remove(existing);
+        allClaims.remove(existing);
+        List<ClaimRegion> ownerClaims = claimsByOwner.get(playerId);
+        if (ownerClaims != null) {
+            ownerClaims.removeIf(c -> c.claimId().equals(existing.claimId()));
+        }
+
+        allClaims.add(candidate);
+        index.add(candidate);
+        claimsByOwner.computeIfAbsent(playerId, k -> new ArrayList<>()).add(candidate);
+        dataManager.saveClaim(candidate);
+
+        activeSelections.remove(playerId);
+        return CreateResult.SUCCESS;
+    }
+
     /** Deletes a claim. Only the owner or an OPERATOR may delete. */
     public boolean deleteClaim(UUID playerId, UUID claimId) {
         ClaimRegion target = allClaims.stream()

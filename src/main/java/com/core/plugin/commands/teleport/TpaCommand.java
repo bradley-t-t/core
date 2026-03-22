@@ -15,7 +15,7 @@ import com.core.plugin.modules.rank.RankLevel;
 @CommandInfo(
         name = "tpa",
         aliases = {"tprequest"},
-        minRank = RankLevel.MODERATOR,
+        minRank = RankLevel.OPERATOR,
         description = "Request to teleport to a player",
         usage = "/tpa <player>",
         playerOnly = true,

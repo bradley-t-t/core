@@ -2,10 +2,13 @@ package com.core.plugin.service;
 
 import com.core.plugin.CorePlugin;
 import com.core.plugin.modules.bots.BotChatEngine;
+import com.core.plugin.modules.bots.BotNameValidator;
 import com.core.plugin.modules.bots.BotPool;
 import com.core.plugin.listener.BotTabListener;
 import com.core.plugin.modules.bots.BotTraits;
+import com.core.plugin.util.BotUtil;
 import com.core.plugin.lang.Lang;
+import com.core.plugin.modules.rank.RankLevel;
 import com.core.plugin.util.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -40,11 +43,23 @@ public final class BotService implements Service {
             "Witch", "Drowned", "Pillager", "Vindicator", "Warden"
     };
 
+    private static final String[] VOTE_SITE_NAMES = {
+            "MinecraftServers.org", "PlanetMinecraft", "TopMinecraftServers",
+            "MinecraftMP.com", "ServerList101"
+    };
+
     private final CorePlugin plugin;
     private final BotPool pool;
     private final BotTraits traits;
     private final Set<String> currentlyOnline = ConcurrentHashMap.newKeySet();
     private final Random random = new Random();
+
+    /** Tracks how many times each bot has voted today, keyed by bot name. */
+    private final Map<String, Integer> dailyVoteCounts = new ConcurrentHashMap<>();
+    /** Bots that are currently muted (name -> unmute time in millis, -1 = permanent). */
+    private final Map<String, Long> mutedBots = new ConcurrentHashMap<>();
+    /** The day-of-year the vote counts were last reset. */
+    private int voteResetDay = -1;
 
     private BotChatEngine chatEngine;
     private int minOnline;
@@ -52,9 +67,11 @@ public final class BotService implements Service {
     private int minSessionMinutes;
     private int maxSessionMinutes;
     private int joinLeaveIntervalSeconds;
+    private int voteLinkCount;
     private int schedulerTaskId = -1;
     private int activityTaskId = -1;
     private int rotationTaskId = -1;
+    private int voteTaskId = -1;
 
     public BotService(CorePlugin plugin) {
         this.plugin = plugin;
@@ -67,6 +84,12 @@ public final class BotService implements Service {
     @Override
     public void enable() {
         loadConfig();
+
+        // Set up name validator before loading pool
+        BotNameValidator validator = new BotNameValidator(plugin);
+        pool.setValidator(validator);
+        BotUtil.setValidator(validator);
+
         pool.load(maxOnline);
         chatEngine = new BotChatEngine(plugin);
 
@@ -100,6 +123,22 @@ public final class BotService implements Service {
 
         startActivityScheduler();
         startPoolRotation();
+        startVoteScheduler();
+
+        // Validate bot names against Mojang API in the background.
+        // Invalid names (no real MC account) get replaced so external sites show them correctly.
+        validator.validateAsync(pool.getNames(), invalidNames -> {
+            if (!invalidNames.isEmpty()) {
+                List<String> newNames = pool.replaceInvalidNames(currentlyOnline);
+                for (String name : newNames) {
+                    traits.assignSingle(name, chatEngine);
+                }
+                // Re-validate the new names
+                if (!newNames.isEmpty()) {
+                    validator.validateAsync(newNames, ignored -> {});
+                }
+            }
+        });
 
         plugin.getLogger().info("Fake player system active: pool of " + pool.size() + ".");
     }
@@ -109,6 +148,7 @@ public final class BotService implements Service {
         cancelTask(schedulerTaskId);
         cancelTask(activityTaskId);
         cancelTask(rotationTaskId);
+        cancelTask(voteTaskId);
         currentlyOnline.clear();
         pool.saveShutdownTime();
     }
@@ -132,11 +172,18 @@ public final class BotService implements Service {
     }
 
     public void removeFromPool(String name) {
+        boolean wasOnline = currentlyOnline.remove(name);
         pool.remove(name);
-        currentlyOnline.remove(name);
+        if (wasOnline) {
+            broadcastLeave(name);
+        }
     }
 
     public boolean isFake(String name) {
+        return currentlyOnline.contains(name) || pool.getNames().contains(name);
+    }
+
+    public boolean isOnlineFake(String name) {
         return currentlyOnline.contains(name);
     }
 
@@ -146,6 +193,23 @@ public final class BotService implements Service {
 
     public boolean isEnabled() {
         return pool.isEnabled();
+    }
+
+    public int getMinOnline() { return minOnline; }
+    public int getMaxOnline() { return maxOnline; }
+
+    public void setMinOnline(int min) {
+        this.minOnline = min;
+        plugin.getConfig().set("fake-players.min-online", min);
+        plugin.saveConfig();
+    }
+
+    public void setMaxOnline(int max) {
+        this.maxOnline = max;
+        plugin.getConfig().set("fake-players.max-online", max);
+        plugin.saveConfig();
+        pool.load(max); // resize pool if needed
+        traits.assignAll(pool.getNames(), chatEngine);
     }
 
     public void activate() {
@@ -176,6 +240,7 @@ public final class BotService implements Service {
 
         startActivityScheduler();
         startPoolRotation();
+        startVoteScheduler();
     }
 
     public void deactivate() {
@@ -185,6 +250,7 @@ public final class BotService implements Service {
         schedulerTaskId = cancelTask(schedulerTaskId);
         activityTaskId = cancelTask(activityTaskId);
         rotationTaskId = cancelTask(rotationTaskId);
+        voteTaskId = cancelTask(voteTaskId);
 
         List<String> toRemove = new ArrayList<>(currentlyOnline);
         Collections.shuffle(toRemove, random);
@@ -209,20 +275,70 @@ public final class BotService implements Service {
         if (!pool.isEnabled() || currentlyOnline.isEmpty()) return;
         if (chatEngine != null) chatEngine.addContext("SERVER", null, victimName + " died");
         plugin.getLogger().info("[FakeChat] Death event: " + victimName);
-        askAiAndSend(victimName + " (" + resolveRankName(victimName) + ") just died");
+        // 20% chance to react to a death
+        if (random.nextInt(100) < 20) {
+            askAiAndSend(victimName + " (" + resolveRankName(victimName) + ") just died");
+        }
     }
 
-    public void onRealPlayerJoin(String playerName) {
+    public void onRealPlayerJoin(String playerName, boolean firstJoin) {
         if (!pool.isEnabled() || currentlyOnline.isEmpty()) return;
-        plugin.getLogger().info("[FakeChat] Join event: " + playerName);
-        askAiAndSend(playerName + " (" + resolveRankName(playerName) + ") just joined the server");
+        plugin.getLogger().info("[FakeChat] Join event: " + playerName + (firstJoin ? " (first join)" : ""));
+
+        // 5-6 bots welcome first-time joiners
+        if (firstJoin) {
+            sendWelcomeCluster(playerName);
+            return; // welcome cluster is enough, don't also ask AI
+        }
+
+        // 15% chance to react to a returning player joining
+        if (random.nextInt(100) < 15) {
+            askAiAndSend(playerName + " (" + resolveRankName(playerName) + ") just joined the server");
+        }
     }
 
     public void onRealPlayerChat(String playerName, String message) {
         if (!pool.isEnabled() || currentlyOnline.isEmpty()) return;
         if (chatEngine != null) chatEngine.addContext(playerName, resolveRankName(playerName), message);
         plugin.getLogger().info("[FakeChat] Chat event: " + playerName + " >> " + message);
-        askAiAndSend(playerName + " (" + resolveRankName(playerName) + ") said: " + message);
+
+        String lower = message.toLowerCase();
+        boolean addressesEveryone = lower.contains("everyone") || lower.contains("every one")
+                || lower.contains("hey all") || lower.contains("anybody")
+                || lower.contains("anyone") || lower.contains("you guys")
+                || lower.contains("yall") || lower.contains("y'all");
+        boolean mentionsBot = currentlyOnline.stream()
+                .anyMatch(bot -> lower.contains(bot.toLowerCase()));
+        boolean isQuestion = message.contains("?") || lower.startsWith("how")
+                || lower.startsWith("what") || lower.startsWith("where")
+                || lower.startsWith("why") || lower.startsWith("who")
+                || lower.startsWith("can ") || lower.startsWith("does ")
+                || lower.startsWith("is there") || lower.startsWith("do you");
+
+        // Group-addressed messages: multiple bots respond
+        if (addressesEveryone) {
+            int responders = Math.min(currentlyOnline.size(), randomBetween(2, 4));
+            for (int i = 0; i < responders; i++) {
+                long delay = randomBetween(30, 80) + (long) i * randomBetween(20, 60);
+                Bukkit.getScheduler().runTaskLater(plugin, () ->
+                        askAiAndSend(playerName + " (" + resolveRankName(playerName) + ") said to everyone: " + message),
+                        delay);
+            }
+            return;
+        }
+
+        // Direct mention or question: 80% chance
+        if (mentionsBot || isQuestion) {
+            if (random.nextInt(100) < 80) {
+                askAiAndSend(playerName + " (" + resolveRankName(playerName) + ") said: " + message);
+            }
+            return;
+        }
+
+        // Regular chat: 40% chance
+        if (random.nextInt(100) < 40) {
+            askAiAndSend(playerName + " (" + resolveRankName(playerName) + ") said: " + message);
+        }
     }
 
     private String resolveRankName(String playerName) {
@@ -231,6 +347,60 @@ public final class BotService implements Service {
         var rankService = plugin.services().get(com.core.plugin.service.RankService.class);
         if (rankService == null) return "player";
         return rankService.getLevel(player.getUniqueId()).name().toLowerCase();
+    }
+
+    // --- Punishment handling ---
+
+    /**
+     * Called when a bot receives a punishment.
+     * Bots react naturally: banned bots leave, muted bots stop talking, kicked bots leave temporarily.
+     */
+    public void onBotPunished(String botName, String typeKey, long durationMillis) {
+        switch (typeKey) {
+            case "ban" -> {
+                // Bot gets banned — remove from online, pool, and add to Bukkit ban list
+                if (currentlyOnline.remove(botName)) {
+                    broadcastLeave(botName);
+                }
+                pool.remove(botName);
+                // Apply real Bukkit ban so the name is properly blocked
+                Date expiry = durationMillis == -1 ? null : new Date(System.currentTimeMillis() + durationMillis);
+                Bukkit.getBanList(org.bukkit.BanList.Type.NAME)
+                        .addBan(botName, "Banned", expiry, "Server");
+            }
+            case "mute" -> {
+                // Bot gets muted — track mute expiry, stop talking
+                long unmute = durationMillis == -1 ? -1 : System.currentTimeMillis() + durationMillis;
+                mutedBots.put(botName, unmute);
+            }
+            case "warn" -> {
+                // Bot gets kicked/warned — leave for a while then maybe come back
+                if (currentlyOnline.remove(botName)) {
+                    broadcastLeave(botName);
+                    // Rejoin after 5-15 minutes
+                    long rejoinTicks = randomBetween(6000, 18000);
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        if (pool.isEnabled() && !currentlyOnline.contains(botName)
+                                && pool.getNames().contains(botName)) {
+                            currentlyOnline.add(botName);
+                            broadcastJoin(botName);
+                        }
+                    }, rejoinTicks);
+                }
+            }
+        }
+    }
+
+    /** Returns true if a bot is currently muted. Also cleans up expired mutes. */
+    private boolean isBotMuted(String botName) {
+        Long unmute = mutedBots.get(botName);
+        if (unmute == null) return false;
+        if (unmute == -1) return true; // permanent
+        if (System.currentTimeMillis() >= unmute) {
+            mutedBots.remove(botName);
+            return false;
+        }
+        return true;
     }
 
     // --- Cycle logic ---
@@ -326,17 +496,82 @@ public final class BotService implements Service {
         broadcastLeave(name);
     }
 
+    // --- Welcome messages ---
+
+    private static final String[] WELCOME_MESSAGES = {
+            "Welcome!", "welcome!", "Welcome!!", "welcome!!", "wb!", "welcomee",
+            "hey welcome!", "ayy welcome", "Welcome :)", "hii welcome",
+            "yoo welcome!", "heyo welcome", "hey!", "welcoome", "welcome dude"
+    };
+
+    private void sendWelcomeCluster(String playerName) {
+        List<String> online = new ArrayList<>(currentlyOnline);
+        if (online.isEmpty()) return;
+
+        Collections.shuffle(online, random);
+        int count = Math.min(online.size(), randomBetween(5, 6));
+
+        for (int i = 0; i < count; i++) {
+            String bot = online.get(i);
+            String msg = WELCOME_MESSAGES[random.nextInt(WELCOME_MESSAGES.length)];
+            long delayTicks = randomBetween(20, 60) + (long) i * randomBetween(15, 40);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (pool.isEnabled() && currentlyOnline.contains(bot)) {
+                    sendFakeChat(bot, msg);
+                    if (chatEngine != null) chatEngine.addContext(bot, msg);
+                }
+            }, delayTicks);
+        }
+    }
+
+    // --- Private message replies ---
+
+    /**
+     * Generates an AI-driven private reply from a bot to a real player.
+     * The callback is invoked on the main thread with the reply message.
+     */
+    public void generatePrivateReply(String botName, String senderName, String incomingMessage,
+                                      java.util.function.Consumer<String> callback) {
+        if (chatEngine == null || !chatEngine.isAvailable()) {
+            // Fallback: canned reply after a delay
+            long delay = 40 + random.nextInt(80);
+            Bukkit.getScheduler().runTaskLater(plugin, () ->
+                    callback.accept(FALLBACK_DM_REPLIES[random.nextInt(FALLBACK_DM_REPLIES.length)]), delay);
+            return;
+        }
+
+        var future = chatEngine.generateDmReply(botName, senderName, incomingMessage);
+        future.thenAccept(reply -> {
+            long delay = 30 + random.nextInt(100); // 1.5-6.5 seconds
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (reply == null || reply.isBlank()) {
+                    callback.accept(FALLBACK_DM_REPLIES[random.nextInt(FALLBACK_DM_REPLIES.length)]);
+                } else {
+                    callback.accept(reply);
+                }
+            }, delay);
+        });
+    }
+
+    private static final String[] FALLBACK_DM_REPLIES = {
+            "hey", "whats up", "yeah?", "hm?", "one sec",
+            "busy rn", "oh hey", "sup", "lol what", "?",
+            "cant talk rn", "who is this", "hey whats up",
+    };
+
     // --- AI chat ---
 
     private void startActivityScheduler() {
         if (activityTaskId != -1) return;
-        long intervalTicks = randomBetween(600, 1200); // 30-60 seconds
+        long intervalTicks = randomBetween(6000, 12000); // 5-10 minutes
         activityTaskId = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (currentlyOnline.isEmpty()) return;
             if (Bukkit.getOnlinePlayers().isEmpty()) {
                 if (random.nextInt(100) < 3) simulateDeath();
                 return;
             }
+            // 15% chance of ambient chatter
+            if (random.nextInt(100) >= 15) return;
             plugin.getLogger().info("[FakeChat] Ambient tick -- asking AI...");
             askAiAndSend(null);
         }, intervalTicks, intervalTicks).getTaskId();
@@ -413,14 +648,15 @@ public final class BotService implements Service {
         String[] scenario = DEATH_SCENARIOS[random.nextInt(DEATH_SCENARIOS.length)];
         boolean needsKiller = "true".equals(scenario[1]);
 
+        String mob = MOB_NAMES[random.nextInt(MOB_NAMES.length)];
         String deathMsg = needsKiller
-                ? Lang.get(scenario[0], "player", victim, "killer",
-                        MOB_NAMES[random.nextInt(MOB_NAMES.length)])
+                ? Lang.get(scenario[0], "player", victim, "killer", mob)
                 : Lang.get(scenario[0], "player", victim);
+        String deathMsgOp = needsKiller
+                ? Lang.get(scenario[0], "player", "*" + victim, "killer", mob)
+                : Lang.get(scenario[0], "player", "*" + victim);
 
-        String colorized = MessageUtil.colorize(deathMsg);
-        for (Player player : Bukkit.getOnlinePlayers()) player.sendMessage(colorized);
-        Bukkit.getConsoleSender().sendMessage(colorized);
+        broadcastBotMessage(deathMsg, deathMsgOp);
 
         if (chatEngine != null) chatEngine.addContext("SERVER", victim + " died");
 
@@ -433,21 +669,29 @@ public final class BotService implements Service {
 
     private void sendFakeChat(String sender, String message) {
         if (sender == null || message == null) return;
+        if (isBotMuted(sender)) return;
 
         BotTraits.RankDisplay display = traits.resolveRankDisplay(sender);
-        String formatted = MessageUtil.colorize(
-                display.prefix() + " " + sender + " &8>> " + display.chatColor() + message);
+        String base = display.prefix() + " " + sender + " &8>> " + display.chatColor() + message;
+        String opBase = display.prefix() + " &7*" + sender + " &8>> " + display.chatColor() + message;
 
-        for (Player player : Bukkit.getOnlinePlayers()) player.sendMessage(formatted);
+        RankService rankService = plugin.services().get(RankService.class);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            boolean isOp = rankService != null
+                    && rankService.getLevel(player.getUniqueId()).isAtLeast(RankLevel.OPERATOR);
+            player.sendMessage(MessageUtil.colorize(isOp ? opBase : base));
+        }
     }
 
     // --- Broadcast helpers ---
 
     private void broadcastJoin(String name) {
         ensureBotPlayerData(name);
-        broadcast(Lang.get("fakeplayers.join", "player", name));
+        broadcastBotMessage(
+                Lang.get("fakeplayers.join", "player", name),
+                Lang.get("fakeplayers.join", "player", "*" + name));
         BotTabListener tab = getTabListener();
-        if (tab != null) tab.addFake(name, traits.getDisplayName(name));
+        if (tab != null) tab.addFake(name, traits.getDisplayName(name), this);
         refreshTab();
     }
 
@@ -529,16 +773,25 @@ public final class BotService implements Service {
         java.util.UUID botId = com.core.plugin.util.BotUtil.fakeUuid(name);
         plugin.dataManager().setLastSeen(botId, System.currentTimeMillis());
 
-        broadcast(Lang.get("fakeplayers.leave", "player", name));
+        broadcastBotMessage(
+                Lang.get("fakeplayers.leave", "player", name),
+                Lang.get("fakeplayers.leave", "player", "*" + name));
         BotTabListener tab = getTabListener();
         if (tab != null) tab.removeFake(name);
         refreshTab();
     }
 
-    private void broadcast(String langMessage) {
-        String colorized = MessageUtil.colorize(langMessage);
-        for (Player player : Bukkit.getOnlinePlayers()) player.sendMessage(colorized);
-        Bukkit.getConsoleSender().sendMessage(colorized);
+    /** Sends a bot-related broadcast with operator-visible distinction. */
+    private void broadcastBotMessage(String normalMessage, String opMessage) {
+        String normal = MessageUtil.colorize(normalMessage);
+        String op = MessageUtil.colorize(opMessage);
+        RankService rankService = plugin.services().get(RankService.class);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            boolean isOp = rankService != null
+                    && rankService.getLevel(player.getUniqueId()).isAtLeast(RankLevel.OPERATOR);
+            player.sendMessage(isOp ? op : normal);
+        }
+        Bukkit.getConsoleSender().sendMessage(op);
     }
 
     private void refreshTab() {
@@ -583,6 +836,11 @@ public final class BotService implements Service {
         minSessionMinutes = plugin.getConfig().getInt("fake-players.min-session-minutes", 15);
         maxSessionMinutes = plugin.getConfig().getInt("fake-players.max-session-minutes", 180);
         joinLeaveIntervalSeconds = plugin.getConfig().getInt("fake-players.cycle-interval-seconds", 60);
+        // Derive vote count from configured vote links, fall back to explicit setting
+        java.util.List<?> voteLinks = plugin.getConfig().getList("voting.vote-links");
+        voteLinkCount = (voteLinks != null && !voteLinks.isEmpty())
+                ? voteLinks.size()
+                : plugin.getConfig().getInt("fake-players.vote-link-count", 1);
     }
 
     private boolean isQuickRestart() {
@@ -618,6 +876,105 @@ public final class BotService implements Service {
         }
 
         return cumulativeDelay;
+    }
+
+    // --- Vote simulation ---
+
+    /**
+     * Periodically triggers bot votes throughout the day.
+     * Each bot votes {@code voteLinkCount} times per day.
+     * Votes happen in clusters of 2-3 bots to mimic real voting behavior.
+     */
+    private void startVoteScheduler() {
+        if (voteTaskId != -1) return;
+        if (voteLinkCount <= 0) return;
+
+        // Check every 3-8 minutes for a vote opportunity
+        long intervalTicks = randomBetween(3600, 9600); // 3-8 min
+        voteTaskId = Bukkit.getScheduler().runTaskTimer(plugin, this::tryVoteCluster,
+                randomBetween(6000, 12000), intervalTicks).getTaskId(); // first check after 5-10 min
+    }
+
+    private void tryVoteCluster() {
+        if (!pool.isEnabled() || currentlyOnline.isEmpty()) return;
+
+        resetDailyVotesIfNeeded();
+
+        // Find online bots that haven't hit their daily vote limit
+        List<String> eligible = currentlyOnline.stream()
+                .filter(name -> dailyVoteCounts.getOrDefault(name, 0) < voteLinkCount)
+                .toList();
+
+        if (eligible.isEmpty()) return;
+
+        // Spread votes throughout the day: probability scales with how many still need to vote
+        // relative to how much of the day is left
+        int totalEligible = eligible.size();
+        int hour = java.time.LocalTime.now().getHour();
+        // Higher chance later in the day if many bots still haven't voted
+        int hoursLeft = Math.max(1, 24 - hour);
+        // Aim to average out votes: if 20 eligible and 12 hours left, ~1-2 should vote now
+        // Base chance per tick of this scheduler: roughly eligible / (hoursLeft * checksPerHour)
+        // ~10 checks per hour at 6min interval
+        double chance = (double) totalEligible / (hoursLeft * 10.0);
+        chance = Math.min(chance, 0.5); // cap at 50% per check
+
+        if (random.nextDouble() >= chance) return;
+
+        // Pick a cluster of 1-3 bots
+        List<String> shuffled = new ArrayList<>(eligible);
+        Collections.shuffle(shuffled, random);
+        int clusterSize = Math.min(shuffled.size(), randomBetween(1, 3));
+
+        // First bot votes immediately
+        simulateVote(shuffled.get(0));
+
+        // Remaining cluster members vote after a short delay (3-30 seconds)
+        for (int i = 1; i < clusterSize; i++) {
+            String follower = shuffled.get(i);
+            long delayTicks = randomBetween(60, 600); // 3-30 seconds
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (pool.isEnabled() && currentlyOnline.contains(follower)) {
+                    simulateVote(follower);
+                }
+            }, delayTicks);
+        }
+    }
+
+    private void simulateVote(String botName) {
+        dailyVoteCounts.merge(botName, 1, Integer::sum);
+
+        String site = pickVoteSiteName();
+        VoteService voteService = plugin.services().get(VoteService.class);
+        if (voteService != null) {
+            voteService.processVote(botName, site, false);
+        }
+
+        // Broadcast with operator distinction
+        broadcastBotMessage(
+                Lang.get("vote.received", "player", botName),
+                Lang.get("vote.received", "player", "*" + botName));
+    }
+
+    /** Picks a vote site name from config, falling back to the hardcoded list. */
+    private String pickVoteSiteName() {
+        java.util.List<?> links = plugin.getConfig().getList("voting.vote-links");
+        if (links != null && !links.isEmpty()) {
+            Object entry = links.get(random.nextInt(links.size()));
+            if (entry instanceof java.util.Map<?, ?> map) {
+                Object name = map.get("name");
+                if (name != null) return name.toString();
+            }
+        }
+        return VOTE_SITE_NAMES[random.nextInt(VOTE_SITE_NAMES.length)];
+    }
+
+    private void resetDailyVotesIfNeeded() {
+        int today = java.time.LocalDate.now().getDayOfYear();
+        if (today != voteResetDay) {
+            dailyVoteCounts.clear();
+            voteResetDay = today;
+        }
     }
 
     // --- Utility ---

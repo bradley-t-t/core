@@ -1,6 +1,0 @@
-name: Core
-version: 1.0.0
-main: com.core.plugin.CorePlugin
-api-version: "1.21"
-description: Essential server management plugin
-authors: [TrentonTaylor]

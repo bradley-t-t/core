@@ -1,10 +1,10 @@
 package com.core.plugin.listener;
 
 import com.core.plugin.CorePlugin;
-import com.core.plugin.claim.ClaimRegion;
-import com.core.plugin.claim.ClaimSelection;
-import com.core.plugin.claim.ClaimService;
-import com.core.plugin.claim.ClaimVisualizer;
+import com.core.plugin.modules.claim.ClaimRegion;
+import com.core.plugin.modules.claim.ClaimSelection;
+import com.core.plugin.service.ClaimService;
+import com.core.plugin.modules.claim.ClaimVisualizer;
 import com.core.plugin.lang.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

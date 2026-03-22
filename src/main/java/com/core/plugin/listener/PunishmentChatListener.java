@@ -1,10 +1,10 @@
 package com.core.plugin.listener;
 
 import com.core.plugin.CorePlugin;
-import com.core.plugin.gui.punishment.PunishmentGui;
+import com.core.plugin.modules.punishment.gui.PunishmentGui;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.punishment.PunishmentFlowState;
-import com.core.plugin.punishment.PunishmentSession;
+import com.core.plugin.modules.punishment.PunishmentFlowState;
+import com.core.plugin.modules.punishment.PunishmentSession;
 import com.core.plugin.service.PunishmentService;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

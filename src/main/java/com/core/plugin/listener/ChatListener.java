@@ -2,8 +2,8 @@ package com.core.plugin.listener;
 
 import com.core.plugin.CorePlugin;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.rank.Rank;
-import com.core.plugin.rank.RankService;
+import com.core.plugin.modules.rank.Rank;
+import com.core.plugin.service.RankService;
 import com.core.plugin.service.BotService;
 import com.core.plugin.service.PlayerStateService;
 import com.core.plugin.util.MessageUtil;

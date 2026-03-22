@@ -11,7 +11,7 @@ import com.core.plugin.util.PlayerUtil;
 import org.bukkit.Material;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 import java.util.List;
 

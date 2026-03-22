@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 import java.util.List;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 @CommandInfo(
         name = "unban",

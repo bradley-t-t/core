@@ -4,7 +4,7 @@ import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandRegistry;
 import com.core.plugin.commands.admin.HelpCommand;
 import com.core.plugin.data.DataManager;
-import com.core.plugin.gui.GuiListener;
+import com.core.plugin.listener.GuiListener;
 import com.core.plugin.lang.Lang;
 import com.core.plugin.lang.LanguageManager;
 import com.core.plugin.service.Service;

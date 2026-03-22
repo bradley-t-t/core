@@ -1,7 +1,7 @@
 package com.core.plugin.data;
 
 import com.core.plugin.CorePlugin;
-import com.core.plugin.punishment.PunishmentRecord;
+import com.core.plugin.modules.punishment.PunishmentRecord;
 import com.core.plugin.util.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;

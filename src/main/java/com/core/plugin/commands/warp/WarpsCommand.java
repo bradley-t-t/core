@@ -4,8 +4,8 @@ import com.core.plugin.CorePlugin;
 import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
-import com.core.plugin.gui.GuiItem;
-import com.core.plugin.gui.PaginatedGui;
+import com.core.plugin.modules.gui.GuiItem;
+import com.core.plugin.modules.gui.PaginatedGui;
 import com.core.plugin.lang.Lang;
 import com.core.plugin.service.TeleportService;
 import com.core.plugin.service.WarpService;
@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 @CommandInfo(
         name = "warps",

@@ -13,7 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 @CommandInfo(
         name = "tppos",

@@ -7,7 +7,7 @@ import com.core.plugin.command.CommandInfo;
 import com.core.plugin.service.TeleportService;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 @CommandInfo(
         name = "tpdeny",

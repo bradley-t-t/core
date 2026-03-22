@@ -91,8 +91,8 @@ public final class CommandContext {
      * Resolves a target: if arg exists and sender's rank meets the requirement, use it;
      * otherwise fall back to self. Used for "target others" gating.
      */
-    public Player targetOrSelf(int argIndex, com.core.plugin.rank.RankLevel requiredRank,
-                                com.core.plugin.rank.RankService rankService) {
+    public Player targetOrSelf(int argIndex, com.core.plugin.modules.rank.RankLevel requiredRank,
+                                com.core.plugin.service.RankService rankService) {
         if (hasArg(argIndex)) {
             if (sender instanceof Player player
                     && !rankService.getLevel(player.getUniqueId()).isAtLeast(requiredRank)) {

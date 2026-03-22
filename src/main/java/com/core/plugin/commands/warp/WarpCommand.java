@@ -12,7 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 @CommandInfo(
         name = "warp",

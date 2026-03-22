@@ -1,10 +1,10 @@
 package com.core.plugin.command;
 
 import com.core.plugin.CorePlugin;
-import com.core.plugin.gui.GuiListener;
+import com.core.plugin.listener.GuiListener;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.rank.RankLevel;
-import com.core.plugin.rank.RankService;
+import com.core.plugin.modules.rank.RankLevel;
+import com.core.plugin.service.RankService;
 import com.core.plugin.service.Service;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

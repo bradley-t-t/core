@@ -5,7 +5,7 @@ import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 import com.core.plugin.service.WildTeleportService;
 import com.core.plugin.util.TimeUtil;
 import org.bukkit.Material;

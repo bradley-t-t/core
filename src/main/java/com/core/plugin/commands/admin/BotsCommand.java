@@ -5,10 +5,10 @@ import com.core.plugin.service.BotService;
 import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
-import com.core.plugin.gui.GuiItem;
-import com.core.plugin.gui.PaginatedGui;
+import com.core.plugin.modules.gui.GuiItem;
+import com.core.plugin.modules.gui.PaginatedGui;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 

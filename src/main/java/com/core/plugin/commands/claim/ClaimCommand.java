@@ -1,19 +1,19 @@
 package com.core.plugin.commands.claim;
 
 import com.core.plugin.CorePlugin;
-import com.core.plugin.claim.ClaimRegion;
-import com.core.plugin.claim.ClaimSelection;
-import com.core.plugin.claim.ClaimService;
+import com.core.plugin.modules.claim.ClaimRegion;
+import com.core.plugin.modules.claim.ClaimSelection;
+import com.core.plugin.service.ClaimService;
 import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
-import com.core.plugin.gui.GuiBuilder;
-import com.core.plugin.gui.GuiItem;
-import com.core.plugin.gui.GlassPane;
-import com.core.plugin.gui.PaginatedGui;
-import com.core.plugin.gui.elements.GuiElements;
+import com.core.plugin.modules.gui.GuiBuilder;
+import com.core.plugin.modules.gui.GuiItem;
+import com.core.plugin.modules.gui.GlassPane;
+import com.core.plugin.modules.gui.PaginatedGui;
+import com.core.plugin.modules.gui.elements.GuiElements;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 import com.core.plugin.util.PlayerUtil;
 import com.core.plugin.util.SoundUtil;
 import org.bukkit.Bukkit;
@@ -131,7 +131,7 @@ public final class ClaimCommand extends BaseCommand {
         ClaimSelection selection = claimService.getOrCreateSelection(player.getUniqueId());
         ClaimService.CreateResult result = claimService.createClaim(player.getUniqueId(), selection, name);
 
-        RankLevel rank = service(com.core.plugin.rank.RankService.class).getLevel(player.getUniqueId());
+        RankLevel rank = service(com.core.plugin.service.RankService.class).getLevel(player.getUniqueId());
 
         switch (result) {
             case SUCCESS -> {
@@ -196,7 +196,7 @@ public final class ClaimCommand extends BaseCommand {
                 .fill(GlassPane.gray());
 
         // Slot 10: Teleport (mod+) or Pathfind (member)
-        RankLevel viewerRank = service(com.core.plugin.rank.RankService.class).getLevel(player.getUniqueId());
+        RankLevel viewerRank = service(com.core.plugin.service.RankService.class).getLevel(player.getUniqueId());
         if (viewerRank.isAtLeast(RankLevel.MODERATOR)) {
             builder.item(10, GuiItem.of(Material.ENDER_PEARL)
                     .name("&eTeleport")

@@ -4,14 +4,14 @@ import com.core.plugin.CorePlugin;
 import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
-import com.core.plugin.gui.ActiveGui;
-import com.core.plugin.gui.GlassPane;
-import com.core.plugin.gui.GuiBuilder;
+import com.core.plugin.modules.gui.ActiveGui;
+import com.core.plugin.modules.gui.GlassPane;
+import com.core.plugin.modules.gui.GuiBuilder;
 import com.core.plugin.lang.Lang;
 import com.core.plugin.util.SoundUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 @CommandInfo(
         name = "trash",

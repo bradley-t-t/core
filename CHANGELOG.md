@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [1.1] - 2026-03-22
 
+- Introduced a Module abstraction with a new base Module class and concrete implementations for each domain: BotsModule, ClaimModule, GuiModule, PunishmentModule, RankModule, and VoteModule
+- Reorganized domain classes under a new `modules` package (bots, claim, gui, punishment, rank, vote)
+- Consolidated all service classes into the `service` package, moving RankService, ClaimService, and VoteService from their respective domain packages
+- Consolidated all listener classes into the `listener` package, moving GuiListener from `gui` and VoteListener from `vote`
+- Moved punishment GUI classes (PunishmentGui, PunishmentHistoryGui) under the modules punishment subpackage
+- Updated import references across all commands, listeners, and services to reflect the new package structure
+
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [1.1] - 2026-03-22
+
 - Core Release v1.1
 
 ## [1.1] - 2026-03-22

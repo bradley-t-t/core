@@ -1,10 +1,10 @@
 package com.core.plugin.service;
 
 import com.core.plugin.CorePlugin;
-import com.core.plugin.bots.BotChatEngine;
-import com.core.plugin.bots.BotPool;
+import com.core.plugin.modules.bots.BotChatEngine;
+import com.core.plugin.modules.bots.BotPool;
 import com.core.plugin.listener.BotTabListener;
-import com.core.plugin.bots.BotTraits;
+import com.core.plugin.modules.bots.BotTraits;
 import com.core.plugin.lang.Lang;
 import com.core.plugin.util.MessageUtil;
 import org.bukkit.Bukkit;
@@ -228,7 +228,7 @@ public final class BotService implements Service {
     private String resolveRankName(String playerName) {
         var player = org.bukkit.Bukkit.getPlayerExact(playerName);
         if (player == null) return "player";
-        var rankService = plugin.services().get(com.core.plugin.rank.RankService.class);
+        var rankService = plugin.services().get(com.core.plugin.service.RankService.class);
         if (rankService == null) return "player";
         return rankService.getLevel(player.getUniqueId()).name().toLowerCase();
     }

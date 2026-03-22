@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
 import java.util.List;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 /**
  * Hot-reloads the Core plugin: disables, reloads the JAR from disk, and re-enables.

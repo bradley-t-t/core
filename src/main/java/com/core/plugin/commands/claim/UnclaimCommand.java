@@ -1,13 +1,13 @@
 package com.core.plugin.commands.claim;
 
 import com.core.plugin.CorePlugin;
-import com.core.plugin.claim.ClaimRegion;
-import com.core.plugin.claim.ClaimService;
+import com.core.plugin.modules.claim.ClaimRegion;
+import com.core.plugin.service.ClaimService;
 import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 import com.core.plugin.util.SoundUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

@@ -1,7 +1,7 @@
 package com.core.plugin.command;
 
-import com.core.plugin.rank.RankLevel;
-import com.core.plugin.rank.RankService;
+import com.core.plugin.modules.rank.RankLevel;
+import com.core.plugin.service.RankService;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

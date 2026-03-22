@@ -4,7 +4,7 @@ import com.core.plugin.CorePlugin;
 import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
-import com.core.plugin.rank.RankService;
+import com.core.plugin.service.RankService;
 import com.core.plugin.lang.Lang;
 import com.core.plugin.util.PlayerUtil;
 import com.core.plugin.util.SoundUtil;
@@ -12,7 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 @CommandInfo(
         name = "feed",

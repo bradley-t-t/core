@@ -4,16 +4,16 @@ import com.core.plugin.CorePlugin;
 import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
-import com.core.plugin.gui.punishment.PunishmentGui;
-import com.core.plugin.punishment.PunishmentRegistry;
-import com.core.plugin.punishment.PunishmentSession;
+import com.core.plugin.modules.punishment.gui.PunishmentGui;
+import com.core.plugin.modules.punishment.PunishmentRegistry;
+import com.core.plugin.modules.punishment.PunishmentSession;
 import com.core.plugin.service.PunishmentService;
 import com.core.plugin.util.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 import java.util.List;
 

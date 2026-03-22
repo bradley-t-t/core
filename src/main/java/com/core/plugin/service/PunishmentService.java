@@ -3,7 +3,7 @@ package com.core.plugin.service;
 import com.core.plugin.CorePlugin;
 import com.core.plugin.data.DataManager;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.punishment.*;
+import com.core.plugin.modules.punishment.*;
 import com.core.plugin.util.SoundUtil;
 import com.core.plugin.util.TimeUtil;
 import org.bukkit.BanList;

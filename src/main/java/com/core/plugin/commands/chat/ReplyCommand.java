@@ -9,7 +9,7 @@ import com.core.plugin.service.PlayerStateService;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 
 import java.util.UUID;
 

@@ -4,15 +4,15 @@ import com.core.plugin.CorePlugin;
 import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
-import com.core.plugin.gui.ActiveGui;
-import com.core.plugin.gui.GlassPane;
-import com.core.plugin.gui.GuiBuilder;
-import com.core.plugin.gui.GuiItem;
-import com.core.plugin.gui.PaginatedGui;
+import com.core.plugin.modules.gui.ActiveGui;
+import com.core.plugin.modules.gui.GlassPane;
+import com.core.plugin.modules.gui.GuiBuilder;
+import com.core.plugin.modules.gui.GuiItem;
+import com.core.plugin.modules.gui.PaginatedGui;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.rank.Rank;
-import com.core.plugin.rank.RankLevel;
-import com.core.plugin.rank.RankService;
+import com.core.plugin.modules.rank.Rank;
+import com.core.plugin.modules.rank.RankLevel;
+import com.core.plugin.service.RankService;
 import com.core.plugin.service.AchievementRegistry;
 import com.core.plugin.service.PlayerStateService;
 import com.core.plugin.service.PlayerStatsService;
@@ -174,7 +174,7 @@ public final class UserCommand extends BaseCommand {
                         event.getWhoClicked().closeInventory();
                         var session = punishmentService.startSession(
                                 viewer.getUniqueId(), targetId, resolvedName);
-                        new com.core.plugin.gui.punishment.PunishmentGui(
+                        new com.core.plugin.modules.punishment.gui.PunishmentGui(
                                 plugin, punishmentService, guiListener())
                                 .openTypeSelection(viewer, session);
                     }));

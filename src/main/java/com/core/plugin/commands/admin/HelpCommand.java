@@ -4,12 +4,12 @@ import com.core.plugin.CorePlugin;
 import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
-import com.core.plugin.gui.GuiItem;
-import com.core.plugin.gui.PaginatedGui;
+import com.core.plugin.modules.gui.GuiItem;
+import com.core.plugin.modules.gui.PaginatedGui;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.rank.Rank;
-import com.core.plugin.rank.RankLevel;
-import com.core.plugin.rank.RankService;
+import com.core.plugin.modules.rank.Rank;
+import com.core.plugin.modules.rank.RankLevel;
+import com.core.plugin.service.RankService;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 

@@ -1,6 +1,6 @@
 package com.core.plugin.command;
 
-import com.core.plugin.rank.RankLevel;
+import com.core.plugin.modules.rank.RankLevel;
 import org.bukkit.Material;
 
 import java.lang.annotation.ElementType;

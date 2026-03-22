@@ -1,0 +1,529 @@
+# ==============================
+# Core Plugin Language File
+# All user-facing text is configurable here.
+# Supports & color codes and {placeholder} replacement.
+# ==============================
+
+prefix: "&7[&eCore&7] &f"
+
+# ---- Generic / Shared ----
+generic:
+  no-permission: "&fYou don't have permission to use this command."
+  player-only: "&fThis command can only be used by players."
+  usage: "&fUsage: &e{usage}"
+  no-permission-others: "&fYou don't have permission to use this on others."
+  player-not-online: "&fPlayer &e{player} &fis not online."
+  invalid-number: "&e{input} &fis not a valid number."
+  cannot-target-self: "&fYou cannot use this command on yourself."
+  invalid-world: "&fWorld &e{world} &fnot found."
+
+# ---- Teleport ----
+tp:
+  teleported-to: "&fTeleported to &e{player}&f."
+  teleported-other: "&fTeleported &e{player} &fto &e{target}&f."
+  teleported-to-coords: "&fTeleported to &e{x}&f, &e{y}&f, &e{z}&f."
+  no-permission-others: "&fYou don't have permission to teleport others."
+
+tphere:
+  teleported-to-you: "&fTeleported &e{player} &fto you."
+  you-were-teleported: "&fYou were teleported to &e{player}&f."
+
+tpall:
+  teleported: "&fTeleported &e{count} &fplayers to you."
+
+tppos:
+  teleported: "&fTeleported to &e{x}&f, &e{y}&f, &e{z}&f."
+  invalid-coords: "&fInvalid coordinates provided."
+
+tpa:
+  request-sent: "&fTPA request sent to &e{player}&f."
+  request-received: "&e{player} &frequests to teleport to you."
+  request-hint: "&7Type &e/tpaccept &7or &e/tpdeny&7."
+  no-pending: "&fYou have no pending TPA requests."
+  expired: "&fThat TPA request has expired."
+  requester-offline: "&fThe requesting player is no longer online."
+  accepted-by: "&fTPA accepted by &e{player}&f."
+  you-accepted: "&fYou accepted &e{player}&f's TPA request."
+  denied-by: "&e{player} &fdenied your TPA request."
+  denied: "&fTPA request denied."
+
+back:
+  no-location: "&fNo previous location found."
+  teleported: "&fTeleported to previous location."
+
+top:
+  teleported: "&fTeleported to the top. &7(Y: {y})"
+
+# ---- Home ----
+home:
+  not-found: "&fHome &e{name} &fnot found."
+  teleported: "&fTeleported to home &e{name}&f."
+  set: "&fHome &e{name} &fhas been set."
+  deleted: "&fHome &e{name} &fhas been deleted."
+  no-homes: "&fYou have no homes set."
+  list-header: "&fYour homes &7({count}):"
+  list-entry: " &7- &e{name} &7-> {location}"
+
+# ---- Warp ----
+warp:
+  not-found: "&fWarp &e{name} &fnot found."
+  teleported: "&fTeleported to warp &e{name}&f."
+  set: "&fWarp &e{name} &fhas been set."
+  deleted: "&fWarp &e{name} &fhas been deleted."
+  no-warps: "&fNo warps have been set."
+  list-header: "&fWarps &7({count}):"
+  list-entry: " &7- &e{name} &7-> {location}"
+
+# ---- Spawn ----
+spawn:
+  no-spawn: "&fThis is a survival server. There is no central spawn and nowhere to hide."
+
+# ---- Player Commands ----
+heal:
+  healed: "&fYou have been healed."
+  healed-other: "&fHealed &e{player}&f."
+
+feed:
+  fed: "&fYour hunger has been restored."
+  fed-other: "&fFed &e{player}&f."
+
+fly:
+  enabled: "&fFlight &eenabled&f."
+  disabled: "&fFlight &7disabled&f."
+  enabled-other: "&fFlight &eenabled &ffor &e{player}&f."
+  disabled-other: "&fFlight &7disabled &ffor &e{player}&f."
+
+speed:
+  set: "&fSpeed set to &e{speed}&f."
+  set-other: "&fSet speed to &e{speed} &ffor &e{player}&f."
+  out-of-range: "&fSpeed must be between &e1 &fand &e10&f."
+
+god:
+  enabled: "&fGod mode &eenabled&f."
+  disabled: "&fGod mode &7disabled&f."
+  enabled-other: "&fGod mode &eenabled &ffor &e{player}&f."
+  disabled-other: "&fGod mode &7disabled &ffor &e{player}&f."
+
+vanish:
+  vanished: "&fYou are now &evanished&f."
+  visible: "&fYou are now &7visible&f."
+  vanished-other: "&e{player} &fis now &evanished&f."
+  visible-other: "&e{player} &fis now &7visible&f."
+
+nick:
+  cleared: "&fNickname cleared."
+  cleared-other: "&fCleared nickname for &e{player}&f."
+  set: "&fNickname set to {nick}&f."
+  set-other: "&fSet &e{player}&f's nickname to {nick}&f."
+
+ping:
+  self: "&fYour ping: &e{ping}ms"
+  other: "&e{player}&f's ping: &e{ping}ms"
+
+afk:
+  now-afk: "&7* &e{player} &7is now AFK."
+  no-longer-afk: "&7* &e{player} &7is no longer AFK."
+
+seen:
+  online: "&e{player} &fis currently online."
+  never-joined: "&fPlayer &e{player} &fhas never joined."
+  last-seen: "&e{player} &fwas last seen &e{time} &fago."
+
+suicide:
+  death: "&fYou took your own life."
+
+wild:
+  searching: "&fSearching for a safe location..."
+  teleported: "&fYou have been teleported to the wild."
+  failed: "&fCould not find a safe location. Try again."
+  cooldown: "&fYou can use this again in &e{time}&f."
+  welcome-1: "&f"
+  welcome-2: "&fWelcome to &eCore Survival&f. You have been dropped into the wild at a random location."
+  welcome-3: "&fThere is no spawn. Gather resources, build a base, and &esurvive&f."
+
+# ---- User Info ----
+user:
+  title: "&8Player: {player}"
+  head-name: "&f{player}"
+  head-rank: "&7Rank: {prefix}"
+  status-online: "&eOnline"
+  status-offline: "&7Offline"
+  rank-label: "&e&lRank"
+  rank-value: "&7{prefix} &f({rank})"
+  rank-weight: "&7Weight: &e{weight}"
+  status-label: "&e&lStatus"
+  homes-label: "&e&lHomes"
+  homes-value: "&7{count} home(s) set"
+  first-join-label: "&e&lFirst Joined"
+  last-seen-label: "&e&lLast Seen"
+  online-now: "&eCurrently online"
+  never-joined: "&7Never joined"
+  location-label: "&e&lLocation"
+  location-value: "&7{world} &f({x}, {y}, {z})"
+  flag-on: "&7> &e{label}"
+  flag-off: "&7> &7{label}"
+  status-nickname: "&7Nick: {nick}"
+  stats-label: "&e&lStatistics"
+  stats-kills: "&7Kills: &f{value}"
+  stats-deaths: "&7Deaths: &f{value}"
+  stats-kd: "&7K/D Ratio: &f{value}"
+  stats-blocks-broken: "&7Blocks Mined: &f{value}"
+  stats-blocks-placed: "&7Blocks Placed: &f{value}"
+  stats-mobs-killed: "&7Mobs Killed: &f{value}"
+  stats-fish-caught: "&7Fish Caught: &f{value}"
+  stats-play-time: "&7Play Time: &f{value}"
+  achievements-label: "&e&lAchievements"
+  achievements-count: "&7{unlocked}/{total} Unlocked"
+  achievements-hint: "&7Click to view all"
+  achievements-title: "&8Achievements: {player}"
+  achievement-name-unlocked: "&e{name}"
+  achievement-name-locked: "&7{name}"
+  achievement-desc: "&7{description}"
+  achievement-unlocked-tag: "&7> &eUnlocked"
+  achievement-progress: "&7Progress: &f{current}/{required}"
+  hover-name: "&f&l{player}"
+  hover-rank: "&7Rank: {rank}"
+  hover-health: "&7Health: &f{health}/{max}"
+  hover-world: "&7World: &f{world}"
+  hover-click: "&7Click to view profile"
+
+# ---- Statistics ----
+stats:
+  achievement-unlocked: "&7> &eAchievement Unlocked: &f{name}"
+  achievement-desc: "&7{description}"
+
+# ---- Punishment System ----
+punish:
+  title: "&8Punish: {player}"
+  severity-title: "&8{type}: Select Severity"
+  confirm-title: "&8Confirm Punishment"
+  preview-title: "&8Review Punishment"
+  history-title: "&8History: {player}"
+  warn-item: "&e&lWarn"
+  warn-lore: "&7Issue a formal warning"
+  mute-item: "&e&lMute"
+  mute-lore: "&7Prevent player from chatting"
+  ban-item: "&e&lBan"
+  ban-lore: "&7Remove player from the server"
+  history-item: "&7&lPunishment History"
+  history-lore: "&7View past punishments"
+  tier-1: "&eTier 1 &7- 1 Hour"
+  tier-2: "&eTier 2 &7- 1 Day"
+  tier-3: "&eTier 3 &7- Permanent"
+  tier-lore: "&7{type} for {duration}"
+  confirm-reason: "&eConfirm & Enter Reason"
+  confirm-lore: "&7{type} - {severity}"
+  enter-reason-prompt: "&fType your reason in chat. Type &ecancel &fto abort."
+  reason-cancelled: "&fPunishment cancelled."
+  preview-type: "&fType: &e{type}"
+  preview-severity: "&fSeverity: &e{severity}"
+  preview-reason: "&fReason: &7{reason}"
+  preview-duration: "&fDuration: &7{duration}"
+  preview-target: "&fTarget: &7{player}"
+  cancel-button: "&7Cancel"
+  execute-button: "&eExecute Punishment"
+  back-button: "&7Back"
+  executed: "&fPunishment applied to &e{player}&f: {type} &7(Tier {severity}) &f- {reason}"
+  executed-warn: "&fWarning issued to &e{player}&f: {reason}"
+  warn-target: "&f&lWARNING &7from staff: &f{reason}"
+  punish-label: "&e&lPunish Player"
+  punish-hint: "&7Click to open punishment GUI"
+  history-entry-name: "&e{type} &7- Tier {severity}"
+  history-entry-name-warn: "&e{type}"
+  history-entry-reason: "&7Reason: &f{reason}"
+  history-entry-moderator: "&7By: &f{moderator}"
+  history-entry-date: "&7Date: &f{date}"
+  history-entry-duration: "&7Duration: &f{duration}"
+  history-entry-active: "&eActive"
+  history-entry-expired: "&7Expired"
+  no-history: "&7No punishment history."
+
+gamemode:
+  set: "&fGamemode set to &e{mode}&f."
+  set-other: "&fSet &e{player}&f's gamemode to &e{mode}&f."
+  unknown-mode: "&fUnknown gamemode: &e{mode}&f."
+
+# ---- Moderation ----
+kick:
+  kicked: "&fKicked &e{player} &ffor: &e{reason}"
+  default-reason: "Kicked by an administrator"
+  screen: "&f&lKICKED\n\n&7{reason}"
+
+ban:
+  banned: "&fBanned &e{player} &ffor: &e{reason}"
+  default-reason: "Banned by an administrator"
+  screen: "&f&lBANNED\n\n&7{reason}"
+
+tempban:
+  banned: "&fTemp-banned &e{player} &ffor &e{duration}&f.\n&fReason: &e{reason}"
+  default-reason: "Temporarily banned"
+  invalid-duration: "&fInvalid duration format. Use: &e1d12h30m"
+  screen: "&f&lTEMP-BANNED\n\n&7{reason}\n&7Expires in: &f{duration}"
+
+unban:
+  not-banned: "&e{player} &fis not banned."
+  unbanned: "&fUnbanned &e{player}&f."
+
+mute:
+  muted: "&e{player} &fhas been &7muted&f."
+  unmuted: "&e{player} &fhas been &eunmuted&f."
+  muted-target: "&fYou have been muted."
+  unmuted-target: "&fYou have been unmuted."
+
+freeze:
+  frozen: "&e{player} &fhas been &7frozen&f."
+  unfrozen: "&e{player} &fhas been &eunfrozen&f."
+  frozen-target: "&fYou have been frozen."
+  unfrozen-target: "&fYou have been unfrozen."
+  cannot-move: "&fYou are frozen and cannot move."
+
+sudo:
+  forced: "&fForced &e{player} &fto execute: &e{input}"
+
+# ---- Chat ----
+msg:
+  sent: "&7[&fYou &7-> &f{target}&7] {message}"
+  received: "&7[&f{sender} &7-> &fYou&7] {message}"
+  no-reply-target: "&fYou have no one to reply to."
+  reply-offline: "&fThat player is no longer online."
+
+broadcast:
+  format: "&7[&eBroadcast&7] &f{message}"
+
+# ---- Inventory ----
+clearinventory:
+  cleared: "&fYour inventory has been cleared."
+  cleared-other: "&fCleared inventory of &e{player}&f."
+
+trash:
+  title: "&8Trash"
+
+invsee:
+  opened: "&fOpened inventory of &e{player}&f."
+
+enderchest:
+  opened-self: "&fOpened your ender chest."
+  opened-other: "&fOpened ender chest of &e{player}&f."
+
+repair:
+  repaired-hand: "&fItem repaired."
+  repaired-all: "&fRepaired &e{count} &fitems."
+  not-repairable: "&fYou are not holding a repairable item."
+  no-permission-all: "&fYou don't have permission to repair all items."
+
+hat:
+  wearing: "&fYou are now wearing &e{item} &fas a hat."
+  not-holding: "&fYou must be holding an item."
+
+more:
+  maxed: "&fStack size set to &e{amount}&f."
+  not-holding: "&fYou must be holding an item."
+
+give:
+  given: "&fGave &e{amount}x {item} &fto &e{player}&f."
+  received: "&fYou received &e{amount}x {item}&f."
+  unknown-material: "&fUnknown material: &e{material}&f."
+
+# ---- World ----
+time:
+  set-preset: "&fTime set to &e{preset} &7({ticks} ticks) &fin &e{world}&f."
+  set-ticks: "&fTime set to &e{ticks} &fticks in &e{world}&f."
+  added-ticks: "&fAdded &e{ticks} &fticks in &e{world}&f."
+
+weather:
+  set: "&fWeather set to &e{type} &fin &e{world}&f."
+  invalid-type: "&fInvalid weather type. Use: &eclear&f, &erain&f, or &estorm&f."
+  specify-world: "&fSpecify a world when using from console."
+  world-not-found: "&fWorld &e{world} &fnot found."
+
+smite:
+  struck: "&fStruck lightning on &e{player}&f."
+
+burn:
+  set-fire: "&fSet &e{player} &fon fire for &e{seconds} &fseconds."
+
+near:
+  no-players: "&fNo players found within &e{radius} &fblocks."
+  header: "&e{count} &fplayer(s) within &e{radius} &fblocks:"
+  entry: " &7- &e{player} &7({distance} blocks away)"
+
+# ---- Bed Spawn ----
+bed:
+  no-spawn-warning: "&fYou do not have a bed spawn set. If you die, you will respawn at a &erandom location&f. Place a bed and sleep in it to set your spawn."
+
+# ---- Death Messages ----
+death:
+  generic: "&e{player} &fdied."
+  fall: "&e{player} &ffell to their death."
+  drowning: "&e{player} &fdrowned."
+  fire: "&e{player} &fburned to death."
+  lava: "&e{player} &ftried to swim in lava."
+  void: "&e{player} &ffell into the void."
+  starvation: "&e{player} &fstarved to death."
+  suffocation: "&e{player} &fsuffocated."
+  explosion: "&e{player} &fwas blown up."
+  lightning: "&e{player} &fwas struck by lightning."
+  freeze: "&e{player} &ffroze to death."
+  mob: "&e{player} &fwas slain by a &e{killer}&f."
+  projectile: "&e{player} &fwas shot by a &e{killer}&f."
+  pvp: "&e{player} &fwas slain by &e{killer}&f."
+  pvp-weapon: "&e{player} &fwas slain by &e{killer} &fusing &e{weapon}&f."
+
+# ---- Head Drops ----
+heads:
+  player: "&e{player}'s Head"
+  player-lore: "&7Slain by &f{killer}"
+  mob: "&e{mob} Head"
+  mob-lore: "&7Killed by &f{player}"
+  mob-dropped: "&fYou obtained a &e{mob} Head&f."
+
+# ---- Chat Listener ----
+chat:
+  muted: "&fYou are muted and cannot chat."
+
+# ---- Title Messages ----
+title:
+  teleport: "&fTeleporting"
+  teleport-subtitle: "&7{destination}"
+  gamemode: "&fGame Mode Changed"
+  gamemode-subtitle: "&7{mode}"
+  wild: "&fThe Wild"
+  wild-subtitle: "&7Explore and survive"
+  welcome: "&fWelcome to Core Survival"
+  welcome-subtitle: "&7Survive. Build. Thrive."
+
+# ---- Action Bar Messages ----
+actionbar:
+  healed: "&7> &fHealed"
+  fed: "&7> &fHunger Restored"
+  speed-set: "&7> &fSpeed: {speed}"
+  fly-enabled: "&7> &fFlight Enabled"
+  fly-disabled: "&7> &fFlight Disabled"
+  god-enabled: "&7> &fGod Mode Enabled"
+  god-disabled: "&7> &fGod Mode Disabled"
+  vanish-on: "&7> &fVanished"
+  vanish-off: "&7> &fVisible"
+  repair: "&7> &fItem Repaired"
+  repair-all: "&7> &fAll Items Repaired"
+  inventory-cleared: "&7> &fInventory Cleared"
+
+# ---- GUI ----
+gui:
+  warps-title: "&8Warps"
+  homes-title: "&8Your Homes"
+  next-page: "&fNext Page &7>"
+  previous-page: "&7< &fPrevious Page"
+  page-indicator: "&7Page {current}/{total}"
+  warp-name: "&e{name}"
+  warp-lore: "&7Click to teleport"
+  home-name: "&e{name}"
+  home-lore: "&7Click to teleport"
+  warp-location: "&7{world} ({x}, {y}, {z})"
+  home-location: "&7{world} ({x}, {y}, {z})"
+  back: "&7Back"
+  confirm: "&eConfirm"
+  cancel: "&7Cancel"
+
+# ---- Fake Players ----
+fakeplayers:
+  join: "&e{player} joined the game"
+  leave: "&e{player} left the game"
+  added: "&fAdded &e{player} &fto the fake player pool."
+  removed: "&fRemoved &e{player} &ffrom the fake player pool."
+  gui-title: "&8Fake Players"
+  gui-name: "&e{player}"
+  gui-online: "&eCurrently online"
+  gui-offline: "&7Offline"
+  gui-click-remove: "&7Click to remove"
+  enabled: "&fFake player system &eenabled&f. Players will start joining."
+  disabled: "&fFake player system &7disabled&f. Players will leave gradually."
+  already-on: "&fFake player system is already enabled."
+  already-off: "&fFake player system is already disabled."
+  status: "&fFake players: &e{state} &7(&f{online} &7online, &f{pool} &7in pool)"
+
+# ---- Player List ----
+list:
+  header: "&fThere are &e{count} &fplayers online:"
+  players: "&e{players}"
+
+# ---- Claims ----
+claim:
+  protected: "&7This area is claimed."
+  not-in-claim: "&fYou are not standing in a claim."
+  not-your-claim: "&fThis claim does not belong to you."
+  no-claims: "&fYou have no claims."
+  corner-1-set: "&fFirst corner set at &e{x}&f, &e{z}&f."
+  corner-2-set: "&fSecond corner set at &e{x}&f, &e{z}&f. Use &e/claim <name> &fto confirm."
+  selection-area: "&7Selection: &e{width} &7x &e{length} &7(&e{area} &7blocks)"
+  created: "&fClaim &e{name} &fcreated. &7({area} blocks)"
+  deleted: "&fClaim &e{name} &fdeleted."
+  too-large: "&fClaim too large. Max area for your rank: &e{max} &fblocks."
+  too-many: "&fYou have reached your claim limit of &e{max}&f."
+  overlaps: "&fThis selection overlaps an existing claim."
+  different-worlds: "&fBoth corners must be in the same world."
+  incomplete: "&fSelect both corners with a &egolden shovel &ffirst."
+  too-small: "&fClaim must be at least &e{min} &fblocks on each side."
+  total-area-exceeded: "&fYou've used your total claim area limit of &e{max} &fblocks."
+  trusted: "&fAdded &e{player} &fto your claim."
+  untrusted: "&fRemoved &e{player} &ffrom your claim."
+  already-trusted: "&e{player} &fis already trusted."
+  not-trusted: "&e{player} &fis not trusted in this claim."
+  info-header: "&7--- Claim Info ---"
+  info-name: "&fName: &e{name}"
+  info-owner: "&fOwner: &e{player}"
+  info-area: "&fArea: &e{width}x{length} &7({area} blocks)"
+  info-trusted: "&fTrusted: &e{players}"
+  wand-given: "&fYou received a &eclaim wand&f. Left-click for corner 1, right-click for corner 2."
+  wand-name: "&eClaim Wand"
+  wand-lore-1: "&7Left-click: Set corner 1"
+  wand-lore-2: "&7Right-click: Set corner 2"
+  list-title: "&8Your Claims"
+  pathfind-started: "&fFollowing the path to &e{name}&f. Follow the blue particles."
+  pathfind-arrived: "&fYou've arrived at &e{name}&f."
+  pathfind-expired: "&fPathfinder expired. Use &e/claims &fto start again."
+  enter-claim: "&7Entering &e{owner}&7's claim &8(&e{name}&8)"
+  enter-own-claim: "&7Entering your claim &8(&e{name}&8)"
+  exit-claim: "&7Leaving claimed area"
+  name-required: "&fProvide a name: &e/claim <name>"
+  name-taken: "&fYou already have a claim named &e{name}&f."
+  not-found: "&fNo claim found named &e{name}&f."
+  manage-title: "&8{name}"
+  teleport-item: "&eTeleport"
+  trusted-item: "&eManage Trusted"
+  view-item: "&eView Borders"
+  delete-item: "&7Delete Claim"
+  viewing: "&fShowing borders for &e{name}&f."
+
+# ---- Voting ----
+vote:
+  received: "&e{player} &fvoted for the server! &7(/vote)"
+  thank-you: "&fThank you for voting! You received your rewards."
+  pending: "&fYou had &e{count} &fpending vote reward(s). Delivered!"
+  count: "&fYou have voted &e{count} &ftime(s)."
+  url: "&fVote for us: &e{url}"
+  url-click: "&7Click to open"
+
+# ---- Core Admin ----
+core:
+  reloading: "&fReloading Core plugin..."
+  reloaded: "&fCore plugin reloaded successfully."
+  lang-reloaded: "&fLanguage file reloaded."
+
+# ---- Rank ----
+rank:
+  no-permission: "&fHey! You need the &e{rank} &frank to use this."
+  set: "&fSet &e{player}&f's rank to &e{rank}&f."
+  your-rank-set: "&fYour rank has been set to {prefix} &f({rank})."
+  info-header: "&7--- Rank Info: &e{player} &7---"
+  info-rank: "&fRank: {prefix} &f({rank})"
+  info-weight: "&fWeight: &e{weight}"
+  list-header: "&7--- Available Ranks ---"
+  list-entry: " {prefix} &f{rank} &7- Weight: &e{weight}"
+  not-found: "&fRank &e{rank} &fnot found."
+  reloaded: "&fRanks reloaded. &e{count} &franks loaded."
+
+# ---- Help ----
+help:
+  title: "&8Commands"
+  header: "&7--- Core Commands ---"
+  no-commands: "&fNo commands available."

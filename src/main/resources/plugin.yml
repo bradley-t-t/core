@@ -1,0 +1,6 @@
+name: Core
+version: ${project.version}
+main: com.core.plugin.CorePlugin
+api-version: "1.21"
+description: Essential server management plugin
+authors: [TrentonTaylor]

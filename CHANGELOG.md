@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [1.1] - 2026-03-22
 
+- Core Release v1.1
+
+## [1.1] - 2026-03-22
+
 - Add Core plugin for Paper 1.21.4 with auto-discovery of services, commands, and listeners via classpath scanning
 - Add annotation-driven command framework with BaseCommand, CommandContext, CommandInfo, and CommandRegistry
 - Add persistent flat-file DataManager for per-player YAML data with auto-save interval

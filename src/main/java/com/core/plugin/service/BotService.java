@@ -301,8 +301,8 @@ public final class BotService implements Service {
         if (!pool.isEnabled() || currentlyOnline.isEmpty()) return;
         if (chatEngine != null) chatEngine.addContext("SERVER", null, victimName + " died");
         plugin.getLogger().info("[FakeChat] Death event: " + victimName);
-        // 20% chance to react to a death
-        if (random.nextInt(100) < 20) {
+        // 35% chance to react to a death
+        if (random.nextInt(100) < 35) {
             askAiAndSend(victimName + " (" + resolveRankName(victimName) + ") just died");
         }
     }
@@ -317,8 +317,8 @@ public final class BotService implements Service {
             return; // welcome cluster is enough, don't also ask AI
         }
 
-        // 15% chance to react to a returning player joining
-        if (random.nextInt(100) < 15) {
+        // 30% chance to react to a returning player joining
+        if (random.nextInt(100) < 30) {
             askAiAndSend(playerName + " (" + resolveRankName(playerName) + ") just joined the server");
         }
     }
@@ -371,16 +371,16 @@ public final class BotService implements Service {
             return;
         }
 
-        // Direct mention or question: 80% chance
+        // Direct mention or question: 90% chance
         if (mentionsBot || isQuestion) {
-            if (random.nextInt(100) < 80) {
+            if (random.nextInt(100) < 90) {
                 askAiAndSend(playerName + " (" + resolveRankName(playerName) + ") said: " + message);
             }
             return;
         }
 
-        // Regular chat: 40% chance
-        if (random.nextInt(100) < 40) {
+        // Regular chat: 60% chance
+        if (random.nextInt(100) < 60) {
             askAiAndSend(playerName + " (" + resolveRankName(playerName) + ") said: " + message);
         }
     }
@@ -609,15 +609,15 @@ public final class BotService implements Service {
 
     private void startActivityScheduler() {
         if (activityTaskId != -1) return;
-        long intervalTicks = randomBetween(6000, 12000); // 5-10 minutes
+        long intervalTicks = randomBetween(2400, 6000); // 2-5 minutes
         activityTaskId = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (currentlyOnline.isEmpty()) return;
             if (Bukkit.getOnlinePlayers().isEmpty()) {
                 if (random.nextInt(100) < 3) simulateDeath();
                 return;
             }
-            // 15% chance of ambient chatter
-            if (random.nextInt(100) >= 15) return;
+            // 40% chance of ambient chatter
+            if (random.nextInt(100) >= 40) return;
             plugin.getLogger().info("[FakeChat] Ambient tick -- asking AI...");
             askAiAndSend(null);
         }, intervalTicks, intervalTicks).getTaskId();

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3] - 2026-03-22
+
+- Increased bot response chances across the board: death reactions from 20% to 35%, returning player joins from 15% to 30%, direct mentions/questions from 80% to 90%, and regular chat from 40% to 60%
+- Bumped ambient chatter probability from 15% to 40%
+- Shortened the activity scheduler interval from 5-10 minutes down to 2-5 minutes
+
 ## [1.2] - 2026-03-22
 
 - Add config auto-patcher that backfills missing keys from the bundled default config.yml without overwriting user customizations

@@ -34,8 +34,12 @@ public final class DiscordCommand extends BaseCommand {
         if (player == null) return;
 
         String url = plugin.getConfig().getString("discord-url", "https://discord.gg/g5AkS6Gpm4");
+        String prefix = Lang.get("prefix");
         String message = Lang.get("discord.link", "url", url);
         String hover = Lang.get("discord.hover");
+
+        TextComponent prefixComponent = new TextComponent(
+                TextComponent.fromLegacy(MessageUtil.colorize(prefix)));
 
         TextComponent clickable = new TextComponent(
                 TextComponent.fromLegacy(MessageUtil.colorize(message)));
@@ -43,6 +47,7 @@ public final class DiscordCommand extends BaseCommand {
         clickable.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 new Text(TextComponent.fromLegacy(MessageUtil.colorize(hover)))));
 
-        player.spigot().sendMessage(clickable);
+        prefixComponent.addExtra(clickable);
+        player.spigot().sendMessage(prefixComponent);
     }
 }

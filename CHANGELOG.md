@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2] - 2026-03-22
+
+- Add config auto-patcher that backfills missing keys from the bundled default config.yml without overwriting user customizations
+- Prepend the server prefix to the Discord command's clickable message
+- Add configurable join/quit messages toggle (join-quit-messages config option) that suppresses join, quit, and bot join/leave messages when disabled
+- Block phantom spawning entirely
+- Bots now track players who accuse others of being bots and respond with hostility toward those players in future interactions
+- Multiple bots react defensively when a player calls people bots, NPCs, or fake accounts
+- Replace famous YouTuber/streamer names in the bot name pool with generic, ordinary-sounding usernames to avoid recognition
+- Reduce bot diamond armor chance from 15% to 3%
+- Tighten tree feller log search radius from 2-block to 1-block neighbors to prevent merging adjacent trees
+- Reduce max horizontal trunk radius from 9 to 5 blocks
+- Change tree feller leaf collection to still gather leaves near foreign logs but stop BFS spread through them, improving boundary detection between neighboring trees
+- Bots that exceed the current max are now gradually drained with staggered leave messages when min/max settings change
+- Prevent bots from joining when already at max capacity
+- Add quit.normal language key for player leave messages
+
 ## [1.1] - 2026-03-22
 
 - Add tree felling module with animated falling, scanning for connected logs, and configurable settings

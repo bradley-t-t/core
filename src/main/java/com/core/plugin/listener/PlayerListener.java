@@ -11,10 +11,12 @@ import com.core.plugin.service.PlayerStatsService;
 import com.core.plugin.service.WildTeleportService;
 import com.core.plugin.util.MessageUtil;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -52,14 +54,17 @@ public final class PlayerListener implements Listener {
 
         // Set join message
         boolean isFirstJoin = plugin.dataManager().getRank(player.getUniqueId()) == null;
+        boolean showJoinQuit = plugin.getConfig().getBoolean("join-quit-messages", true);
         if (isFirstJoin) {
             event.joinMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
                     .legacySection().deserialize(MessageUtil.colorize(
                             Lang.get("join.first", "player", player.getName()))));
-        } else {
+        } else if (showJoinQuit) {
             event.joinMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
                     .legacySection().deserialize(MessageUtil.colorize(
                             Lang.get("join.normal", "player", player.getName()))));
+        } else {
+            event.joinMessage(null);
         }
 
         // First join: assign default rank and wild teleport
@@ -154,6 +159,14 @@ public final class PlayerListener implements Listener {
         Player player = event.getPlayer();
         plugin.services().get(PlayerStateService.class).updateLastSeen(player.getUniqueId());
         plugin.services().get(PlayerStatsService.class).unloadPlayer(player.getUniqueId());
+
+        if (plugin.getConfig().getBoolean("join-quit-messages", true)) {
+            event.quitMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+                    .legacySection().deserialize(MessageUtil.colorize(
+                            Lang.get("quit.normal", "player", player.getName()))));
+        } else {
+            event.quitMessage(null);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -279,6 +292,13 @@ public final class PlayerListener implements Listener {
         player.setRespawnLocation(event.getBed().getLocation(), true);
         Lang.send(player, "bed.spawn-set");
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        if (event.getEntityType() == EntityType.PHANTOM) {
+            event.setCancelled(true);
+        }
     }
 
     private boolean hasActuallyMoved(PlayerMoveEvent event) {

@@ -10,12 +10,21 @@ import com.core.plugin.lang.LanguageManager;
 import com.core.plugin.service.Service;
 import com.core.plugin.service.ServiceRegistry;
 import com.core.plugin.util.ClassUtil;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Core plugin entry point. Services, commands, and listeners are auto-discovered
@@ -38,6 +47,7 @@ public final class CorePlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        patchConfig();
         dataManager = new DataManager(this);
         languageManager = new LanguageManager(this);
         Lang.init(languageManager);
@@ -67,6 +77,52 @@ public final class CorePlugin extends JavaPlugin {
 
     public void reloadLanguage() {
         languageManager.reload();
+    }
+
+    /**
+     * Patches any missing keys from the bundled default config.yml into
+     * the server's existing config.yml. Preserves user customizations.
+     */
+    private void patchConfig() {
+        var resource = getResource("config.yml");
+        if (resource == null) return;
+
+        YamlConfiguration defaults = YamlConfiguration.loadConfiguration(
+                new InputStreamReader(resource, StandardCharsets.UTF_8));
+        File configFile = new File(getDataFolder(), "config.yml");
+        YamlConfiguration current = YamlConfiguration.loadConfiguration(configFile);
+
+        Map<String, Object> defaultValues = new HashMap<>();
+        flattenConfig("", defaults, defaultValues);
+
+        boolean patched = false;
+        for (var entry : defaultValues.entrySet()) {
+            if (!current.contains(entry.getKey())) {
+                current.set(entry.getKey(), entry.getValue());
+                patched = true;
+            }
+        }
+
+        if (patched) {
+            try {
+                current.save(configFile);
+                reloadConfig();
+                getLogger().info("Patched missing keys into config.yml.");
+            } catch (IOException e) {
+                getLogger().log(Level.SEVERE, "Failed to save patched config.yml", e);
+            }
+        }
+    }
+
+    private void flattenConfig(String parentPath, ConfigurationSection section, Map<String, Object> output) {
+        for (String key : section.getKeys(false)) {
+            String fullPath = parentPath.isEmpty() ? key : parentPath + "." + key;
+            if (section.isConfigurationSection(key)) {
+                flattenConfig(fullPath, section.getConfigurationSection(key), output);
+            } else {
+                output.put(fullPath, section.get(key));
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")

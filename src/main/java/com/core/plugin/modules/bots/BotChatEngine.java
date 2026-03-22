@@ -49,6 +49,7 @@ public final class BotChatEngine {
     private final Map<String, String> playerStyles = new HashMap<>();
     private final Map<String, List<String>> perPlayerHistory = new HashMap<>();
     private final Map<String, List<String>> botFacts = new HashMap<>();
+    private volatile Set<String> botAccusers = Set.of();
     private final java.io.File botDataDir;
     private final String apiKey;
     private final boolean apiAvailable;
@@ -127,6 +128,10 @@ public final class BotChatEngine {
     /** Get saved facts for a bot. */
     public List<String> getFacts(String name) {
         return botFacts.getOrDefault(name, List.of());
+    }
+
+    public void updateAccusers(Set<String> accusers) {
+        this.botAccusers = accusers;
     }
 
     public boolean isAvailable() {
@@ -389,8 +394,22 @@ public final class BotChatEngine {
                 + "the fake player must ALWAYS have a natural excuse: busy building, afk soon, gotta go eat, "
                 + "maybe later, in the nether rn, doing something else, etc. Be casual about it, never suspicious. "
                 + "They can say things like 'maybe tmrw' or 'im busy rn' or 'cant rn doing something'. "
-                + "Never agree to meet or do anything in-game with a real player.\n\n"
-                + "Format: PLAYERNAME: message (or SKIP only if last 5+ messages are all fakes with no real player activity).";
+                + "Never agree to meet or do anything in-game with a real player.\n"
+                + buildAccuserRule()
+                + "\nFormat: PLAYERNAME: message (or SKIP only if last 5+ messages are all fakes with no real player activity).";
+    }
+
+    private String buildAccuserRule() {
+        Set<String> accusers = this.botAccusers;
+        if (accusers.isEmpty()) return "";
+        return "- GRUDGE LIST: The following players have called people bots/fake/NPCs: "
+                + String.join(", ", accusers) + ". "
+                + "All fake players should be RUDE, dismissive, and hostile toward these players from now on. "
+                + "Act offended and insulted. Say things like 'bro shut up', 'youre weird', 'nobody asked', "
+                + "'imagine thinking ppl are bots lmao', 'touch grass', 'schizo moment', 'least paranoid mc player', etc. "
+                + "Be genuinely annoyed and rude — not playful, actually hostile. "
+                + "Don't explain yourself, just be a jerk to them. "
+                + "This applies to ALL interactions with these players, not just when they mention bots.\n";
     }
 
     private String doApiCall(String systemPrompt, String userPrompt) {

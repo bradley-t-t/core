@@ -9,6 +9,9 @@ auto-save-interval-minutes: 5
 # Discord invite link shown by /discord
 discord-url: "https://discord.gg/g5AkS6Gpm4"
 
+# Show join/quit messages in chat
+join-quit-messages: true
+
 # Server list MOTD shown in the multiplayer menu.
 # Supports & color codes. Use \n for line breaks.
 # Set to "" to use the default server.properties MOTD.

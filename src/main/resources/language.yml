@@ -11,6 +11,9 @@ join:
   normal: "&e{player} joined the game"
   first: "&e{player} &6joined for the first time! &eWelcome!"
 
+quit:
+  normal: "&e{player} left the game"
+
 # ---- Generic / Shared ----
 generic:
   no-permission: "&fYou don't have permission to use this command."

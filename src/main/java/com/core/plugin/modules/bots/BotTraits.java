@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class BotTraits {
 
-    private static final double DIAMOND_CHANCE = 0.15;
+    private static final double DIAMOND_CHANCE = 0.03;
 
     /** Personality distribution weights (quiet, casual, social, tryhard, chill). Must sum to ~100. */
     private static final int[] PERSONALITY_WEIGHTS = {15, 35, 20, 15, 15};

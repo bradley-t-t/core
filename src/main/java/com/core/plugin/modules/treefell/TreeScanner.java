@@ -74,7 +74,7 @@ public final class TreeScanner {
      * @param minRatio Minimum leaf-to-log ratio for natural tree validation
      */
     /** Max horizontal distance (X or Z) a log can be from the trunk base. */
-    private static final int MAX_HORIZONTAL_RADIUS = 9;
+    private static final int MAX_HORIZONTAL_RADIUS = 5;
 
     public static ScanResult scan(Block origin, int maxLogs, double minRatio) {
         Material logType = origin.getType();
@@ -110,9 +110,11 @@ public final class TreeScanner {
 
             Block current = queue.poll();
 
-            for (int dx = -2; dx <= 2; dx++) {
-                for (int dy = -1; dy <= 2; dy++) {
-                    for (int dz = -2; dz <= 2; dz++) {
+            // 26-directional (radius 1) — catches diagonal branches without
+            // jumping gaps between neighboring trees
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    for (int dz = -1; dz <= 1; dz++) {
                         if (dx == 0 && dy == 0 && dz == 0) continue;
                         Block neighbor = current.getRelative(dx, dy, dz);
                         if (neighbor.getY() < originY) continue;
@@ -167,25 +169,26 @@ public final class TreeScanner {
      * BFS from logs outward through leaves to collect all attached leaves.
      * Leaves connect to logs and to each other within a reasonable distance.
      * Max 6 blocks from the nearest log to prevent runaway into neighboring trees.
-     * Skips any leaf that is adjacent to a foreign log (same type but not in our tree set)
-     * to avoid claiming leaves that belong to a neighboring tree.
+     * Leaves adjacent to a foreign log (same type, not in our tree) are still collected
+     * but act as a boundary — the BFS does not spread further through them.
      */
     private static void collectLeaves(Set<Block> logs, Material logType, Set<Material> leafTypes, Set<Block> result) {
-        // Seed: all leaf blocks directly adjacent to any log
         Queue<Block> queue = new ArrayDeque<>();
         Map<Block, Integer> distance = new HashMap<>();
 
+        // Seed: all leaf blocks directly adjacent to any log
         for (Block log : logs) {
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dy = -1; dy <= 1; dy++) {
                     for (int dz = -1; dz <= 1; dz++) {
                         if (dx == 0 && dy == 0 && dz == 0) continue;
                         Block neighbor = log.getRelative(dx, dy, dz);
-                        if (leafTypes.contains(neighbor.getType())
-                                && !touchesForeignLog(neighbor, logType, logs)
-                                && result.add(neighbor)) {
-                            queue.add(neighbor);
+                        if (leafTypes.contains(neighbor.getType()) && result.add(neighbor)) {
                             distance.put(neighbor, 1);
+                            // Only continue BFS from this leaf if it doesn't touch a foreign log
+                            if (!touchesForeignLog(neighbor, logType, logs)) {
+                                queue.add(neighbor);
+                            }
                         }
                     }
                 }
@@ -198,15 +201,15 @@ public final class TreeScanner {
             int dist = distance.get(current);
             if (dist >= 6) continue;
 
-            // Leaves connect via 6-directional (not diagonal) to match vanilla decay distance
             for (BlockFace face : new BlockFace[]{BlockFace.UP, BlockFace.DOWN,
                     BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
                 Block neighbor = current.getRelative(face);
-                if (leafTypes.contains(neighbor.getType())
-                        && !touchesForeignLog(neighbor, logType, logs)
-                        && result.add(neighbor)) {
+                if (leafTypes.contains(neighbor.getType()) && result.add(neighbor)) {
                     distance.put(neighbor, dist + 1);
-                    queue.add(neighbor);
+                    // Boundary: collect the leaf but don't spread through it if it's near a foreign tree
+                    if (!touchesForeignLog(neighbor, logType, logs)) {
+                        queue.add(neighbor);
+                    }
                 }
             }
         }
@@ -214,8 +217,7 @@ public final class TreeScanner {
 
     /**
      * Returns true if the given block is adjacent (6-directional) to a log of the same type
-     * that is NOT part of our detected tree set. This means the leaf likely belongs to
-     * or is shared with a neighboring tree.
+     * that is NOT part of our detected tree set — indicating a neighboring tree boundary.
      */
     private static boolean touchesForeignLog(Block block, Material logType, Set<Block> ourLogs) {
         for (BlockFace face : new BlockFace[]{BlockFace.UP, BlockFace.DOWN,

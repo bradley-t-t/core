@@ -58,6 +58,8 @@ public final class BotService implements Service {
     private final Map<String, Integer> dailyVoteCounts = new ConcurrentHashMap<>();
     /** Bots that are currently muted (name -> unmute time in millis, -1 = permanent). */
     private final Map<String, Long> mutedBots = new ConcurrentHashMap<>();
+    /** Players who have called bots "bots" — bots will be rude to them. */
+    private final Set<String> botAccusers = ConcurrentHashMap.newKeySet();
     /** The day-of-year the vote counts were last reset. */
     private int voteResetDay = -1;
 
@@ -195,6 +197,10 @@ public final class BotService implements Service {
         return pool.isEnabled();
     }
 
+    public Set<String> getBotAccusers() {
+        return Set.copyOf(botAccusers);
+    }
+
     public int getMinOnline() { return minOnline; }
     public int getMaxOnline() { return maxOnline; }
 
@@ -202,6 +208,7 @@ public final class BotService implements Service {
         this.minOnline = min;
         plugin.getConfig().set("fake-players.min-online", min);
         plugin.saveConfig();
+        drainIfOverMax();
     }
 
     public void setMaxOnline(int max) {
@@ -210,6 +217,25 @@ public final class BotService implements Service {
         plugin.saveConfig();
         pool.load(max); // resize pool if needed
         traits.assignAll(pool.getNames(), chatEngine);
+        drainIfOverMax();
+    }
+
+    /** Gradually remove bots that exceed the current max. */
+    private void drainIfOverMax() {
+        int excess = currentlyOnline.size() - maxOnline;
+        if (excess <= 0) return;
+
+        List<String> toRemove = new ArrayList<>(currentlyOnline);
+        Collections.shuffle(toRemove, random);
+        toRemove = toRemove.subList(0, excess);
+
+        for (int i = 0; i < toRemove.size(); i++) {
+            String name = toRemove.get(i);
+            long delay = (long) (i + 1) * randomBetween(60, 200); // staggered 3-10s apart
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (currentlyOnline.remove(name)) broadcastLeave(name);
+            }, delay);
+        }
     }
 
     public void activate() {
@@ -228,7 +254,7 @@ public final class BotService implements Service {
             String name = shuffled.get(i);
             long delayTicks = (long) (i + 1) * randomBetween(100, 300);
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (!pool.isEnabled()) return;
+                if (!pool.isEnabled() || currentlyOnline.size() >= maxOnline) return;
                 currentlyOnline.add(name);
                 broadcastJoin(name);
             }, delayTicks);
@@ -303,6 +329,24 @@ public final class BotService implements Service {
         plugin.getLogger().info("[FakeChat] Chat event: " + playerName + " >> " + message);
 
         String lower = message.toLowerCase();
+
+        // Detect players calling bots "bots"
+        boolean callsBots = lower.contains("bot") || lower.contains("npc") || lower.contains("fake player")
+                || lower.contains("fake account") || lower.contains("not real");
+        if (callsBots) {
+            botAccusers.add(playerName);
+            // Always respond to bot accusations — multiple bots get offended
+            int responders = Math.min(currentlyOnline.size(), randomBetween(2, 4));
+            for (int i = 0; i < responders; i++) {
+                long delay = randomBetween(20, 60) + (long) i * randomBetween(15, 40);
+                Bukkit.getScheduler().runTaskLater(plugin, () ->
+                        askAiAndSend(playerName + " (" + resolveRankName(playerName)
+                                + ") just accused people of being bots, saying: " + message),
+                        delay);
+            }
+            return;
+        }
+
         boolean addressesEveryone = lower.contains("everyone") || lower.contains("every one")
                 || lower.contains("hey all") || lower.contains("anybody")
                 || lower.contains("anyone") || lower.contains("you guys")
@@ -443,6 +487,8 @@ public final class BotService implements Service {
     }
 
     private void joinRandomPlayer() {
+        if (currentlyOnline.size() >= maxOnline) return;
+
         List<String> inWindow = pool.getNames().stream()
                 .filter(name -> !currentlyOnline.contains(name))
                 .filter(traits::isInWindow)
@@ -581,6 +627,7 @@ public final class BotService implements Service {
         if (Bukkit.getOnlinePlayers().isEmpty()) return;
         if (chatEngine == null || !chatEngine.isAvailable()) return;
 
+        chatEngine.updateAccusers(getBotAccusers());
         plugin.getLogger().info("[FakeChat] API call -- event: " + (event != null ? event : "ambient"));
 
         var future = (event != null)
@@ -687,9 +734,11 @@ public final class BotService implements Service {
 
     private void broadcastJoin(String name) {
         ensureBotPlayerData(name);
-        broadcastBotMessage(
-                Lang.get("fakeplayers.join", "player", name),
-                Lang.get("fakeplayers.join", "player", "*" + name));
+        if (plugin.getConfig().getBoolean("join-quit-messages", true)) {
+            broadcastBotMessage(
+                    Lang.get("fakeplayers.join", "player", name),
+                    Lang.get("fakeplayers.join", "player", "*" + name));
+        }
         BotTabListener tab = getTabListener();
         if (tab != null) tab.addFake(name, traits.getDisplayName(name), this);
         refreshTab();
@@ -773,9 +822,11 @@ public final class BotService implements Service {
         java.util.UUID botId = com.core.plugin.util.BotUtil.fakeUuid(name);
         plugin.dataManager().setLastSeen(botId, System.currentTimeMillis());
 
-        broadcastBotMessage(
-                Lang.get("fakeplayers.leave", "player", name),
-                Lang.get("fakeplayers.leave", "player", "*" + name));
+        if (plugin.getConfig().getBoolean("join-quit-messages", true)) {
+            broadcastBotMessage(
+                    Lang.get("fakeplayers.leave", "player", name),
+                    Lang.get("fakeplayers.leave", "player", "*" + name));
+        }
         BotTabListener tab = getTabListener();
         if (tab != null) tab.removeFake(name);
         refreshTab();
@@ -863,7 +914,7 @@ public final class BotService implements Service {
             String name = shuffled.get(i);
             long delay = cumulativeDelay;
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (!pool.isEnabled()) return;
+                if (!pool.isEnabled() || currentlyOnline.size() >= maxOnline) return;
                 currentlyOnline.add(name);
                 broadcastJoin(name);
             }, delay);

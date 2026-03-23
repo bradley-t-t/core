@@ -29,5 +29,5 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           local_path: ./target/Core.jar
-          remote_path: /plugins/Core.jar
+          remote_path: /1. Core Minecraft/plugins/Core.jar
           sftp_only: true

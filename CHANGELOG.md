@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9] - 2026-03-23
+
+- Update SFTP deploy path to target the "1. Core Minecraft" server directory
+
 ## [1.8] - 2026-03-23
 
 - Add GitHub Actions workflow for automatic build and SFTP deploy to the server on push to main

@@ -548,6 +548,16 @@ rank:
   not-found: "&fRank &e{rank} &fnot found."
   reloaded: "&fRanks reloaded. &e{count} &franks loaded."
 
+# ---- Diamond Perks ----
+diamond:
+  trail-set: "&fParticle trail set to &b{trail}&f."
+  trail-cleared: "&fParticle trail &7disabled&f."
+  joinmsg-set: "&fJoin message set to: &b{message}"
+  joinmsg-cleared: "&fCustom join message &7disabled&f."
+  joinmsg-too-long: "&fJoin message must be under &e{max} &fcharacters."
+  joinmsg-current: "&fYour join message: &b{message}"
+  joinmsg-none: "&fYou don't have a custom join message set. Use &e/joinmessage <message> &fto set one."
+
 # ---- Help ----
 help:
   title: "&8Commands"

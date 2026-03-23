@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1] - 2026-03-23
+
+- Add Diamond rank perks system with DiamondService for managing trails, join messages, and priority queue
+- Add /craft command for Diamond players to open a portable crafting table
+- Add /joinmessage command to set, view, or clear a custom join message (64 char limit)
+- Add /particles command with a GUI selector for 10 cosmetic particle trails (heart, flame, soul, enchant, note, cherry blossom, end portal, snowflake, emerald, diamond dust)
+- Add DiamondListener for priority queue bypass when the server is full and broadcasting custom join messages
+- Persist Diamond player data (trails and join messages) to diamond.yml
+- Add language entries for all Diamond perk feedback messages
+
 ## [1.3] - 2026-03-22
 
 - Increased bot response chances across the board: death reactions from 20% to 35%, returning player joins from 15% to 30%, direct mentions/questions from 80% to 90%, and regular chat from 40% to 60%

@@ -319,14 +319,21 @@ public final class PlayerListener implements Listener {
         TextComponent storeSuffix = new TextComponent(MessageUtil.colorize(" &7to get Diamond rank"));
         player.spigot().sendMessage(storeLabel, storeLink, storeSuffix);
 
-        // Last seen
-        if (!isFirstJoin) {
+        // Last seen or first join tips
+        player.sendMessage("");
+        if (isFirstJoin) {
+            player.sendMessage(MessageUtil.colorize("  &c&l! &fThere is no spawn. &7You start at a random location."));
+            player.sendMessage(MessageUtil.colorize("  &c&l! &7Place a &fbed &7immediately to set your respawn point."));
+            player.sendMessage(MessageUtil.colorize("  &c&l! &7If you die without a bed, you'll spawn &fsomewhere new&7."));
+        } else {
             long lastSeen = plugin.services().get(PlayerStateService.class).getLastSeen(player.getUniqueId());
             if (lastSeen > 0) {
                 long elapsed = System.currentTimeMillis() - lastSeen;
                 String timeAgo = formatElapsed(elapsed);
-                player.sendMessage("");
                 player.sendMessage(MessageUtil.colorize("  &7You last joined &f" + timeAgo + " &7ago"));
+            }
+            if (player.getBedSpawnLocation() == null) {
+                player.sendMessage(MessageUtil.colorize("  &c&l! &7You still don't have a &fbed spawn&7. Place a bed!"));
             }
         }
 

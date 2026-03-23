@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5] - 2026-03-23
+
+- Add first-join tips explaining there is no spawn, urging players to place a bed immediately
+- Warn returning players who still have no bed spawn location to place a bed
+- Refactor join message logic to show first-join tips or last-seen time based on join status
+
 ## [1.4] - 2026-03-23
 
 - Add welcome message on player join with clickable links to the website, Discord, vote page, and Diamond rank store

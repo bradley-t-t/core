@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6] - 2026-03-23
+
+- Replace sftp-upload-action with lftp for deploying the JAR to the server
+- Add a verification step to confirm the JAR exists before uploading
+
 ## [2.5] - 2026-03-23
 
 - Switch deploy workflow from appleboy/scp-action to Dylan700/sftp-upload-action for server uploads

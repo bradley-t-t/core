@@ -21,12 +21,13 @@ jobs:
       - name: Build JAR
         run: mvn clean package -q
 
+      - name: Verify JAR exists
+        run: ls -la ./target/Core.jar
+
       - name: Upload to Server via SFTP
-        uses: Dylan700/sftp-upload-action@v1.1.4
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          port: ${{ secrets.SFTP_PORT }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          uploads: |
-            ./target/Core.jar => /1. Core Minecraft/plugins/Core.jar
+        run: |
+          sudo apt-get install -y lftp > /dev/null 2>&1
+          lftp -u "${{ secrets.SFTP_USERNAME }},${{ secrets.SFTP_PASSWORD }}" \
+            -p ${{ secrets.SFTP_PORT }} \
+            sftp://${{ secrets.SFTP_HOST }} \
+            -e "put ./target/Core.jar -o '/1. Core Minecraft/plugins/Core.jar'; bye"

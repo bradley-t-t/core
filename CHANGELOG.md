@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4] - 2026-03-23
+
+- Rewrote bot chat rules so fake players naturally react to what others say in chat instead of mostly ignoring each other, while still keeping them as strangers
+- Added strict anti-repetition rules requiring bots to check the last 5+ messages and avoid repeating both wording and meaning
+- Made bot messages shorter and more casual (2-8 words), matching how real players type in game chat
+- Added Discord hatred rule — bots always respond negatively if anyone mentions Discord
+- Added Discord mention handling in BotChatManager with a 15% chance to respond negatively, otherwise silently ignored
+- Removed the entire stat backfill system from BotDataSeeder, including the backfillStats method, achievement thresholds, and growthMultiplier method — all stat growth now happens live via BotStatGrowthTask
+
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
 ## [2.8] - 2026-03-23
 
 - Fix "last seen" timestamp in welcome message by capturing it before updating, so returning players see the correct time since their previous join

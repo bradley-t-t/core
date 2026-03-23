@@ -261,6 +261,14 @@ public final class BotChatManager {
             return;
         }
 
+        // Discord mentions — mostly ignore, rarely respond negatively
+        if (lower.contains("discord")) {
+            if (random.nextInt(100) < 15) {
+                askAiAndSend(playerName + " (" + rankName + ") mentioned Discord: " + message);
+            }
+            return;
+        }
+
         // Group-addressed messages
         if (containsAny(lower, BotMessages.GROUP_ADDRESS_KEYWORDS)) {
             int responders = Math.min(countActiveBots(),

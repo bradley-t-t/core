@@ -27,6 +27,9 @@ jobs:
       - name: Upload to Server via SFTP
         run: |
           sudo apt-get install -y lftp > /dev/null 2>&1
+          mkdir -p ~/.lftp
+          echo "set sftp:auto-confirm yes" > ~/.lftp/rc
+          echo "set net:max-retries 3" >> ~/.lftp/rc
           lftp -u "${{ secrets.SFTP_USERNAME }},${{ secrets.SFTP_PASSWORD }}" \
             -p ${{ secrets.SFTP_PORT }} \
             sftp://${{ secrets.SFTP_HOST }} \

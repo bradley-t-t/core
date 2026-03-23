@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.7] - 2026-03-23
+
+- Configure lftp to auto-confirm SFTP host keys during deployment, avoiding interactive prompts in CI
+- Add retry policy (max 3 retries) to lftp for more resilient SFTP uploads
+
 ## [2.6] - 2026-03-23
 
 - Replace sftp-upload-action with lftp for deploying the JAR to the server

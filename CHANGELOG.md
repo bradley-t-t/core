@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7] - 2026-03-23
+
+- Decomposed the monolithic BotService into focused single-responsibility managers: BotLifecycleManager (join/leave cycling), BotChatManager (chat responses), BotVoteManager (vote simulation), BotBroadcaster (message formatting and tab list), and BotDataSeeder (fake player data)
+- Centralized all bot system constants, thresholds, and timing values into BotConfig, replacing magic numbers scattered across BotService
+- Consolidated all bot message pools into BotMessages as a single source of truth, deduplicating strings from BotService, BotTraits, and MessageCommand
+- Added personality-aware chat behavior: bots now have response chance multipliers per personality type (quiet, casual, social, tryhard, chill) that affect how likely they are to respond
+- Added typing delay simulation based on message length so short messages like "lol" send fast while longer sentences take more time
+- Added AFK/silence windows where bots temporarily stop chatting and optionally announce going AFK and returning
+- Added self-initiated messages where bots spontaneously talk about what they're doing based on their personality
+- Added bot-to-bot conversation with chain depth limiting to prevent infinite reply loops
+- Added peak hour weighting to join/leave cycling so bot activity follows a realistic daily pattern
+- Moved fallback DM replies from MessageCommand into the shared BotMessages pool
+- Removed the empty BotsModule shell class that had no-op enable/disable methods
+- Reduced BotService from ~900 lines to a thin orchestrator delegating to the new managers
+- Updated VoteService.processVote call to pass the correct boolean parameter
+
 ## [1.6] - 2026-03-23
 
 - Rewrote the first-join welcome message to be more immersive and descriptive

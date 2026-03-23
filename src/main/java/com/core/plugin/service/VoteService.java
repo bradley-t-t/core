@@ -95,7 +95,7 @@ public final class VoteService implements Service {
      * Processes a vote. If broadcast is false, the vote-received message is not sent
      * (caller handles it, e.g. BotService sends operator-aware messages).
      */
-    void processVote(String username, String serviceName, boolean broadcast) {
+    public void processVote(String username, String serviceName, boolean broadcast) {
         // Some vote sites send their own name as the username — ignore these
         if (username == null || username.length() < 3 || username.length() > 16
                 || BOGUS_USERNAMES.contains(username.toLowerCase())

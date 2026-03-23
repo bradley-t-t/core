@@ -5,6 +5,7 @@ import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
 import com.core.plugin.lang.Lang;
+import com.core.plugin.modules.bots.BotMessages;
 import com.core.plugin.service.BotService;
 import com.core.plugin.service.PlayerStateService;
 import com.core.plugin.util.PlayerUtil;
@@ -15,7 +16,6 @@ import com.core.plugin.modules.rank.RankLevel;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 @CommandInfo(
         name = "msg",
@@ -27,14 +27,6 @@ import java.util.Set;
         icon = Material.WRITABLE_BOOK
 )
 public final class MessageCommand extends BaseCommand {
-
-    /** Fallback replies if the AI engine is unavailable. */
-    private static final String[] FALLBACK_REPLIES = {
-            "hey", "whats up", "yeah?", "hm?", "one sec",
-            "busy rn", "oh hey", "sup", "lol what", "?",
-            "cant talk rn", "who is this", "hey whats up",
-            "oh hey man", "im busy doing something rn",
-    };
 
     private static final Random RANDOM = new Random();
 
@@ -71,7 +63,7 @@ public final class MessageCommand extends BaseCommand {
                     long delay = 40 + RANDOM.nextInt(80);
                     Bukkit.getScheduler().runTaskLater(plugin, () -> {
                         if (!sender.isOnline()) return;
-                        String reply = FALLBACK_REPLIES[RANDOM.nextInt(FALLBACK_REPLIES.length)];
+                        String reply = BotMessages.random(BotMessages.FALLBACK_DM);
                         Lang.sendRaw(sender, "msg.received", "sender", targetName, "message", reply);
                     }, delay);
                 }

@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0] - 2026-03-23
+
+- Replace third-party SFTP Deploy Action with direct sshpass/sftp commands for deploying the plugin JAR to the server
+- Pass SFTP credentials via environment variables instead of action inputs
+
 ## [1.9] - 2026-03-23
 
 - Update SFTP deploy path to target the "1. Core Minecraft" server directory

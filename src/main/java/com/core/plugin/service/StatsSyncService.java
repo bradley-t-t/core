@@ -258,7 +258,7 @@ public final class StatsSyncService implements Service {
         json.append("}");
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(supabaseUrl + "/rest/v1/player_stats"))
+                .uri(URI.create(supabaseUrl + "/rest/v1/player_stats?on_conflict=username"))
                 .header("apikey", anonKey)
                 .header("Authorization", "Bearer " + anonKey)
                 .header("Content-Type", "application/json")
@@ -275,6 +275,29 @@ public final class StatsSyncService implements Service {
             }
         } catch (IOException | InterruptedException e) {
             plugin.getLogger().log(Level.WARNING, "[StatsSync] Failed to sync " + username, e);
+        }
+    }
+
+    private void markBotsOffline() {
+        if (!isConfigured()) return;
+
+        String supabaseUrl = plugin.getConfig().getString("supabase-url", "");
+        String anonKey = plugin.getConfig().getString("supabase-anon-key", "");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(supabaseUrl + "/rest/v1/player_stats?is_bot=eq.true&is_online=eq.true"))
+                .header("apikey", anonKey)
+                .header("Authorization", "Bearer " + anonKey)
+                .header("Content-Type", "application/json")
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(
+                        "{\"is_online\":false,\"updated_at\":\"" + Instant.now() + "\"}"))
+                .timeout(Duration.ofSeconds(5))
+                .build();
+
+        try {
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            plugin.getLogger().log(Level.WARNING, "[StatsSync] Failed to mark bots offline", e);
         }
     }
 

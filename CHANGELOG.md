@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3] - 2026-03-23
+
+- Add on_conflict=username query parameter to player stats upsert endpoint to handle duplicate username conflicts
+- Add markBotsOffline method to set all online bots to offline status via Supabase PATCH request
+
 ## [1.2] - 2026-03-23
 
 - Add StatsSyncService to periodically sync player stats (kills, deaths, blocks, playtime, etc.) to Supabase every 2 minutes for website leaderboards and profiles

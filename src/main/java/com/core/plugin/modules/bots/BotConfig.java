@@ -19,17 +19,17 @@ public final class BotConfig {
     // --- Chat response chances (0-100) ---
 
     /** Chance bots react to ambient tick. */
-    public static final int AMBIENT_CHAT_CHANCE = 40;
+    public static final int AMBIENT_CHAT_CHANCE = 8;
     /** Chance bots react to a regular chat message. */
-    public static final int REGULAR_CHAT_CHANCE = 60;
+    public static final int REGULAR_CHAT_CHANCE = 10;
     /** Chance bots react to a direct mention or question. */
-    public static final int MENTION_CHAT_CHANCE = 90;
+    public static final int MENTION_CHAT_CHANCE = 20;
     /** Chance bots react to a player death. */
-    public static final int DEATH_REACT_CHANCE = 35;
+    public static final int DEATH_REACT_CHANCE = 8;
     /** Chance bots react to a returning player joining. */
-    public static final int JOIN_REACT_CHANCE = 30;
+    public static final int JOIN_REACT_CHANCE = 8;
     /** Chance of a simulated death when no real players are online. */
-    public static final int IDLE_DEATH_CHANCE = 3;
+    public static final int IDLE_DEATH_CHANCE = 1;
     /** Chance to prefer in-window bots when joining. */
     public static final int IN_WINDOW_JOIN_CHANCE = 80;
     /** Chance out-of-window bots leave during a cycle. */
@@ -41,22 +41,22 @@ public final class BotConfig {
 
     // --- Welcome cluster ---
 
-    public static final int WELCOME_MIN_BOTS = 1;
-    public static final int WELCOME_MAX_BOTS = 3;
+    public static final int WELCOME_MIN_BOTS = 0;
+    public static final int WELCOME_MAX_BOTS = 2;
     /** Chance that nobody welcomes a joining player at all (0-100). */
-    public static final int WELCOME_SKIP_CHANCE = 15;
+    public static final int WELCOME_SKIP_CHANCE = 60;
 
     // --- Bot accusation ---
 
     public static final int ACCUSATION_MIN_RESPONDERS = 0;
-    public static final int ACCUSATION_MAX_RESPONDERS = 2;
+    public static final int ACCUSATION_MAX_RESPONDERS = 1;
     /** Chance that bots completely ignore a bot accusation (0-100). */
-    public static final int ACCUSATION_IGNORE_CHANCE = 40;
+    public static final int ACCUSATION_IGNORE_CHANCE = 70;
 
     // --- Group message ---
 
-    public static final int GROUP_MIN_RESPONDERS = 2;
-    public static final int GROUP_MAX_RESPONDERS = 4;
+    public static final int GROUP_MIN_RESPONDERS = 1;
+    public static final int GROUP_MAX_RESPONDERS = 2;
 
     // --- Session (minutes) ---
 
@@ -77,8 +77,8 @@ public final class BotConfig {
 
     // --- Delays (ticks) ---
 
-    public static final int AMBIENT_MIN_INTERVAL = 2400;
-    public static final int AMBIENT_MAX_INTERVAL = 6000;
+    public static final int AMBIENT_MIN_INTERVAL = 6000;
+    public static final int AMBIENT_MAX_INTERVAL = 18000;
     public static final int ROTATION_MIN_INTERVAL = 144000;
     public static final int ROTATION_MAX_INTERVAL = 288000;
     public static final int VOTE_MIN_INTERVAL = 3600;
@@ -116,7 +116,7 @@ public final class BotConfig {
     /** Time window in millis to track recent bot messages for fatigue. */
     public static final long FATIGUE_WINDOW_MS = 120_000; // 2 minutes
     /** Max messages a bot can send within the fatigue window before going quiet. */
-    public static final int FATIGUE_MAX_MESSAGES = 4;
+    public static final int FATIGUE_MAX_MESSAGES = 2;
 
     // --- Natural silence ---
 
@@ -136,19 +136,19 @@ public final class BotConfig {
     /** Maximum silence duration in ticks. */
     public static final int AFK_MAX_DURATION = 18000; // 15 minutes
     /** Chance a bot says "brb" or similar before going silent. */
-    public static final int AFK_ANNOUNCE_CHANCE = 30;
+    public static final int AFK_ANNOUNCE_CHANCE = 10;
     /** Chance a bot says "back" or similar when returning. */
-    public static final int AFK_RETURN_ANNOUNCE_CHANCE = 40;
+    public static final int AFK_RETURN_ANNOUNCE_CHANCE = 15;
 
     // --- Self-initiated messages ---
 
     /** Chance per ambient tick that a bot initiates its own message (0-100). */
-    public static final int SELF_INITIATE_CHANCE = 15;
+    public static final int SELF_INITIATE_CHANCE = 5;
 
     // --- Bot-to-bot interaction ---
 
     /** Chance that a bot message triggers another bot to respond (0-100). */
-    public static final int BOT_TO_BOT_CHANCE = 20;
+    public static final int BOT_TO_BOT_CHANCE = 8;
     /** Max bot-to-bot exchanges per conversation to prevent loops. */
     public static final int BOT_TO_BOT_MAX_CHAIN = 2;
 

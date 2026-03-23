@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8] - 2026-03-23
+
+- Significantly reduced all bot chat response chances (ambient, regular, mention, death, join) to make bots much less talkative overall
+- Lowered idle death simulation chance from 3% to 1%
+- Made welcome behavior much rarer: welcome can now be skipped entirely (min bots 0), fewer max welcomers, and skip chance raised from 15% to 60%
+- Bots now more likely to ignore accusations (70% up from 40%) with fewer max responders
+- Reduced group message responder counts (1-2 instead of 2-4)
+- Tripled ambient tick intervals (6000-18000 ticks, up from 2400-6000) so bots speak less frequently
+- Lowered fatigue max messages from 4 to 2, making bots go quiet sooner in rapid conversations
+- Reduced AFK announce and return announce chances to 10% and 15% respectively
+- Cut self-initiated message chance from 15% to 5%
+- Lowered bot-to-bot response chance from 20% to 8%
+
 ## [1.7] - 2026-03-23
 
 - Remove bot auto-reply logic from private messages — bots no longer generate AI or fallback responses when messaged directly

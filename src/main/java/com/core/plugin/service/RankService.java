@@ -28,7 +28,7 @@ public final class RankService implements Service {
 
     @Override
     public void enable() {
-        plugin.saveResource("ranks.yml", false);
+        if (!ranksFile.exists()) plugin.saveResource("ranks.yml", false);
         reload();
     }
 

@@ -28,7 +28,9 @@ public final class LanguageManager {
     public LanguageManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.languageFile = new File(plugin.getDataFolder(), "language.yml");
-        plugin.saveResource("language.yml", false);
+        if (!languageFile.exists()) {
+            plugin.saveResource("language.yml", false);
+        }
         reload();
     }
 

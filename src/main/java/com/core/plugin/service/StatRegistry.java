@@ -27,9 +27,8 @@ public final class StatRegistry implements Service {
 
     @Override
     public void enable() {
-        plugin.saveResource("stats.yml", false);
-
         File statsFile = new File(plugin.getDataFolder(), "stats.yml");
+        if (!statsFile.exists()) plugin.saveResource("stats.yml", false);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(statsFile);
         ConfigurationSection section = config.getConfigurationSection("stats");
 

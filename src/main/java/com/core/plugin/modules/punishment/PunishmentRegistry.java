@@ -26,9 +26,8 @@ public final class PunishmentRegistry implements Service {
 
     @Override
     public void enable() {
-        plugin.saveResource("punishments.yml", false);
-
         File file = new File(plugin.getDataFolder(), "punishments.yml");
+        if (!file.exists()) plugin.saveResource("punishments.yml", false);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         loadTypes(config);

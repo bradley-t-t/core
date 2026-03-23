@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6] - 2026-03-23
+
+- Only save default resource files when they don't already exist, preventing user-modified configs from being overwritten on reload
+- Applied this fix across all registry and service configs: language.yml, punishments.yml, achievements.yml, ranks.yml, and stats.yml
+
 ## [1.5] - 2026-03-23
 
 - Add thinking delay phase before typing so bots pause to "read and process" before responding

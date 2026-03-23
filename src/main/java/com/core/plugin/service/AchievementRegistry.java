@@ -27,9 +27,8 @@ public final class AchievementRegistry implements Service {
 
     @Override
     public void enable() {
-        plugin.saveResource("achievements.yml", false);
-
         File file = new File(plugin.getDataFolder(), "achievements.yml");
+        if (!file.exists()) plugin.saveResource("achievements.yml", false);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         ConfigurationSection root = config.getConfigurationSection("achievements");
         if (root == null) {

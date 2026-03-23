@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4] - 2026-03-23
+
+- Add welcome message on player join with clickable links to the website, Discord, vote page, and Diamond rank store
+- Show personalized greeting for returning players and a generic welcome for first-time joins
+- Display "last seen" time for returning players showing how long ago they last joined
+- Rework vote command link formatting to use a cleaner "Click Here" style instead of lang-file-driven text
+
 ## [1.3] - 2026-03-23
 
 - Add on_conflict=username query parameter to player stats upsert endpoint to handle duplicate username conflicts

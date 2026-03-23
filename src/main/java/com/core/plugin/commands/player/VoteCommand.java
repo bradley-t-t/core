@@ -55,16 +55,13 @@ public final class VoteCommand extends BaseCommand {
                 String url = urlObj != null ? urlObj.toString() : "";
                 if (url.isEmpty()) continue;
 
-                String linkText = Lang.get("vote.link", "name", name, "url", url);
-                String hoverText = Lang.get("vote.link-hover", "name", name);
+                TextComponent prefix = new TextComponent(MessageUtil.colorize("  &a▸ &f" + name + ": "));
+                TextComponent clickHere = new TextComponent(MessageUtil.colorize("&a&nClick Here"));
+                clickHere.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+                clickHere.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new Text(MessageUtil.colorize("&7Vote on " + name))));
 
-                TextComponent clickable = new TextComponent(
-                        TextComponent.fromLegacy(MessageUtil.colorize(linkText)));
-                clickable.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-                clickable.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new Text(TextComponent.fromLegacy(MessageUtil.colorize(hoverText)))));
-
-                player.spigot().sendMessage(clickable);
+                player.spigot().sendMessage(prefix, clickHere);
             }
             return;
         }

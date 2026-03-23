@@ -11,6 +11,11 @@ import com.core.plugin.service.PlayerStatsService;
 import com.core.plugin.service.StatsSyncService;
 import com.core.plugin.service.WildTeleportService;
 import com.core.plugin.util.MessageUtil;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -111,6 +116,12 @@ public final class PlayerListener implements Listener {
                 );
             }, 10L);
         }
+
+        // Welcome message with clickable links
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            if (!player.isOnline()) return;
+            sendWelcomeMessage(player, isFirstJoin);
+        }, 20L);
 
         // Set tab list name with rank prefix
         Rank rank = rankService.getRank(player.getUniqueId());
@@ -262,6 +273,78 @@ public final class PlayerListener implements Listener {
         for (Player online : plugin.getServer().getOnlinePlayers()) {
             Lang.send(online, langKey, replacements);
         }
+    }
+
+    private void sendWelcomeMessage(Player player, boolean isFirstJoin) {
+        String divider = MessageUtil.colorize("&8&m                                                            ");
+        String greeting = isFirstJoin
+                ? MessageUtil.colorize("&f&lWelcome to Core Minecraft!")
+                : MessageUtil.colorize("&f&lWelcome Back, &e&l" + player.getName() + "&f&l!");
+
+        player.sendMessage(divider);
+        player.sendMessage("");
+        player.sendMessage("  " + MessageUtil.colorize("&a&lCore &b&lMinecraft"));
+        player.sendMessage("  " + greeting);
+        player.sendMessage("");
+
+        // Website link
+        TextComponent websiteLabel = new TextComponent(MessageUtil.colorize("  &a▸ &f"));
+        TextComponent websiteLink = new TextComponent(MessageUtil.colorize("&a&nClick Here"));
+        websiteLink.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://coreminecraft.com"));
+        websiteLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(MessageUtil.colorize("&7Open coreminecraft.com"))));
+        TextComponent websiteSuffix = new TextComponent(MessageUtil.colorize(" &7to visit our Website"));
+        player.spigot().sendMessage(websiteLabel, websiteLink, websiteSuffix);
+
+        // Discord link
+        TextComponent discordLabel = new TextComponent(MessageUtil.colorize("  &b▸ &f"));
+        TextComponent discordLink = new TextComponent(MessageUtil.colorize("&b&nClick Here"));
+        discordLink.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/g5AkS6Gpm4"));
+        discordLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(MessageUtil.colorize("&7Join our Discord server"))));
+        TextComponent discordSuffix = new TextComponent(MessageUtil.colorize(" &7to join our Discord"));
+        player.spigot().sendMessage(discordLabel, discordLink, discordSuffix);
+
+        // Vote link
+        TextComponent voteLabel = new TextComponent(MessageUtil.colorize("  &9▸ &f"));
+        TextComponent voteLink = new TextComponent(MessageUtil.colorize("&9&nClick Here"));
+        voteLink.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vote"));
+        voteLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(MessageUtil.colorize("&7View vote links"))));
+        TextComponent voteSuffix = new TextComponent(MessageUtil.colorize(" &7to vote for the server"));
+        player.spigot().sendMessage(voteLabel, voteLink, voteSuffix);
+
+        // Store link
+        TextComponent storeLabel = new TextComponent(MessageUtil.colorize("  &e▸ &f"));
+        TextComponent storeLink = new TextComponent(MessageUtil.colorize("&e&nClick Here"));
+        storeLink.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://coreminecraft.com/diamond"));
+        storeLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(MessageUtil.colorize("&7View Diamond rank perks"))));
+        TextComponent storeSuffix = new TextComponent(MessageUtil.colorize(" &7to get Diamond rank"));
+        player.spigot().sendMessage(storeLabel, storeLink, storeSuffix);
+
+        // Last seen
+        if (!isFirstJoin) {
+            long lastSeen = plugin.services().get(PlayerStateService.class).getLastSeen(player.getUniqueId());
+            if (lastSeen > 0) {
+                long elapsed = System.currentTimeMillis() - lastSeen;
+                String timeAgo = formatElapsed(elapsed);
+                player.sendMessage("");
+                player.sendMessage(MessageUtil.colorize("  &7You last joined &f" + timeAgo + " &7ago"));
+            }
+        }
+
+        player.sendMessage("");
+        player.sendMessage(divider);
+    }
+
+    private String formatElapsed(long millis) {
+        long totalMinutes = millis / 60_000;
+        long days = totalMinutes / 1440;
+        long hours = (totalMinutes % 1440) / 60;
+        long minutes = totalMinutes % 60;
+
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) sb.append(days).append("d ");
+        if (hours > 0 || days > 0) sb.append(hours).append("h ");
+        sb.append(minutes).append("m");
+        return sb.toString().trim();
     }
 
     private String getWeaponName(Player killer) {

@@ -202,31 +202,33 @@ public final class StatsSyncService implements Service {
         Set<String> onlineBots = botService.getOnlineFakes();
         if (onlineBots.isEmpty()) return;
 
+        var dm = plugin.dataManager();
+
         for (String botName : onlineBots) {
-            // Deterministic join date derived from name hash — 1 to 365 days ago
-            long daysAgo = Math.abs(botName.hashCode() % 365) + 1;
-            String botFirstJoin = Instant.now().minus(Duration.ofDays(daysAgo)).toString();
+            UUID botId = com.core.plugin.util.BotUtil.fakeUuid(botName);
+
+            long firstJoin = dm.getFirstJoin(botId);
+            String firstJoinStr = firstJoin > 0 ? Instant.ofEpochMilli(firstJoin).toString() : null;
+
+            String rank = dm.getRank(botId);
+            if (rank == null) rank = "member";
 
             upsertPlayer(
                     botName,
-                    null,
-                    "member",
-                    randomBotStat(50, 500),
-                    randomBotStat(20, 200),
-                    randomBotStat(5000, 80000),
-                    randomBotStat(3000, 50000),
-                    randomBotStat(100, 3000),
-                    randomBotStat(10, 300),
-                    randomBotStat(60, 6000),
-                    botFirstJoin,
+                    botId.toString(),
+                    rank,
+                    dm.getStat(botId, "kills"),
+                    dm.getStat(botId, "deaths"),
+                    dm.getStat(botId, "blocks-broken"),
+                    dm.getStat(botId, "blocks-placed"),
+                    dm.getStat(botId, "mobs-killed"),
+                    dm.getStat(botId, "fish-caught"),
+                    dm.getStat(botId, "play-time"),
+                    firstJoinStr,
                     true,
                     true
             );
         }
-    }
-
-    private long randomBotStat(long min, long max) {
-        return min + (long) (Math.random() * (max - min));
     }
 
     private void upsertPlayer(String username, String uuid, String rank,
@@ -321,6 +323,50 @@ public final class StatsSyncService implements Service {
             httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             plugin.getLogger().log(Level.WARNING, "[StatsSync] Failed to mark players offline", e);
+        }
+    }
+
+    /**
+     * Delete all bot rows from the Supabase {@code player_stats} table.
+     * Runs synchronously — call from an async context.
+     *
+     * @return the number of rows deleted, or -1 on failure
+     */
+    public int deleteAllBotStats() {
+        if (!isConfigured()) return -1;
+
+        String supabaseUrl = plugin.getConfig().getString("supabase-url", "");
+        String anonKey = plugin.getConfig().getString("supabase-anon-key", "");
+
+        // Supabase REST: DELETE with filter returns deleted rows when Prefer: return=representation
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(supabaseUrl + "/rest/v1/player_stats?is_bot=eq.true"))
+                .header("apikey", anonKey)
+                .header("Authorization", "Bearer " + anonKey)
+                .header("Prefer", "return=representation")
+                .DELETE()
+                .timeout(Duration.ofSeconds(10))
+                .build();
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                // Count occurrences of "username" in the JSON array to approximate row count
+                String body = response.body();
+                int count = 0;
+                int idx = 0;
+                while ((idx = body.indexOf("\"username\"", idx)) != -1) {
+                    count++;
+                    idx++;
+                }
+                return count;
+            }
+            plugin.getLogger().warning("[StatsSync] Failed to delete bot stats: HTTP "
+                    + response.statusCode() + " " + response.body());
+            return -1;
+        } catch (IOException | InterruptedException e) {
+            plugin.getLogger().log(Level.WARNING, "[StatsSync] Failed to delete bot stats", e);
+            return -1;
         }
     }
 

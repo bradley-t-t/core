@@ -36,6 +36,7 @@ public final class BotService implements Service {
     private BotLifecycleManager lifecycle;
     private BotChatManager chatManager;
     private BotVoteManager voteManager;
+    private BotStatGrowthTask growthTask;
 
     private int joinLeaveIntervalSeconds;
     private int voteLinkCount;
@@ -71,6 +72,7 @@ public final class BotService implements Service {
         lifecycle = new BotLifecycleManager(plugin, pool, traits, broadcaster, seeder, chatEngine, currentlyOnline);
         chatManager = new BotChatManager(plugin, chatEngine, broadcaster, traits, pool, currentlyOnline);
         voteManager = new BotVoteManager(plugin, currentlyOnline, broadcaster);
+        growthTask = new BotStatGrowthTask(plugin, traits, currentlyOnline);
 
         int minOnline = plugin.getConfig().getInt("fake-players.min-online", 10);
         int maxOnline = plugin.getConfig().getInt("fake-players.max-online", 30);
@@ -101,6 +103,7 @@ public final class BotService implements Service {
         lifecycle.startPoolRotation();
         chatManager.startActivityScheduler();
         voteManager.start(voteLinkCount);
+        growthTask.start();
 
         // Validate bot names in background
         validator.validateAsync(pool.getNames(), invalidNames -> {
@@ -123,6 +126,7 @@ public final class BotService implements Service {
         if (lifecycle != null) lifecycle.stopAll();
         if (chatManager != null) chatManager.stopActivityScheduler();
         if (voteManager != null) voteManager.stop();
+        if (growthTask != null) growthTask.stop();
         currentlyOnline.clear();
         pool.saveShutdownTime();
     }
@@ -139,6 +143,46 @@ public final class BotService implements Service {
 
     public List<String> getPlayerPool() {
         return pool.getNames();
+    }
+
+    /**
+     * Delete all bot player data files from disk and clear bot rows from Supabase.
+     * Bots will regenerate fresh data (with organic backfill) on their next join.
+     *
+     * @param callback called on the main thread with the count of files deleted
+     *                 and the Supabase row count (or -1 on failure)
+     */
+    public void resetBotData(java.util.function.BiConsumer<Integer, Integer> callback) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            java.io.File playerDataDir = new java.io.File(plugin.getDataFolder(), "playerdata");
+            int filesDeleted = 0;
+
+            // Build a set of all bot UUIDs from the pool
+            Set<String> botUuidStrings = new java.util.HashSet<>();
+            for (String name : pool.getNames()) {
+                botUuidStrings.add(BotUtil.fakeUuid(name).toString());
+            }
+
+            // Delete matching YAML files
+            if (playerDataDir.exists()) {
+                java.io.File[] files = playerDataDir.listFiles((dir, fn) -> fn.endsWith(".yml"));
+                if (files != null) {
+                    for (java.io.File file : files) {
+                        String uuidStr = file.getName().replace(".yml", "");
+                        if (botUuidStrings.contains(uuidStr)) {
+                            if (file.delete()) filesDeleted++;
+                        }
+                    }
+                }
+            }
+
+            // Clear from Supabase
+            StatsSyncService syncService = plugin.services().get(StatsSyncService.class);
+            int supabaseDeleted = syncService != null ? syncService.deleteAllBotStats() : -1;
+
+            int finalFilesDeleted = filesDeleted;
+            Bukkit.getScheduler().runTask(plugin, () -> callback.accept(finalFilesDeleted, supabaseDeleted));
+        });
     }
 
     public void addToPool(String name) {
@@ -266,6 +310,7 @@ public final class BotService implements Service {
         }
         if (chatManager != null) chatManager.startActivityScheduler();
         if (voteManager != null) voteManager.start(voteLinkCount);
+        if (growthTask != null) growthTask.start();
     }
 
     public void deactivate() {
@@ -275,6 +320,7 @@ public final class BotService implements Service {
         if (lifecycle != null) lifecycle.deactivate();
         if (chatManager != null) chatManager.stopActivityScheduler();
         if (voteManager != null) voteManager.stop();
+        if (growthTask != null) growthTask.stop();
     }
 
     // --- Internal ---

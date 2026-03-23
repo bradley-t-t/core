@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8] - 2026-03-23
+
+- Add GitHub Actions workflow for automatic build and SFTP deploy to the server on push to main
+- Add periodic bot stat growth system that increments online bot stats every 10 minutes with personality-scaled random gains
+- Replace deterministic hash-based bot stats with organic growth model where new bots start at zero and backfill stats proportional to their age
+- Add configurable stat growth rates, personality multipliers, zero-gain chance, and absolute stat caps in BotConfig
+- Sync bot stats to Supabase from actual YAML data instead of generating random values each sync cycle
+- Add "resetdata" subcommand to /fakeplayers that deletes all bot player data files and clears bot rows from Supabase
+- Add deleteAllBotStats method to StatsSyncService for bulk-removing bot entries from the website database
+- Add confirmation prompt and language entries for the reset data workflow
+
 ## [1.7] - 2026-03-23
 
 - Decomposed the monolithic BotService into focused single-responsibility managers: BotLifecycleManager (join/leave cycling), BotChatManager (chat responses), BotVoteManager (vote simulation), BotBroadcaster (message formatting and tab list), and BotDataSeeder (fake player data)

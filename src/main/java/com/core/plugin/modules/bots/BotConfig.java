@@ -151,6 +151,50 @@ public final class BotConfig {
     public static final int MAX_PER_PLAYER_HISTORY = 12;
     public static final int MAX_FACTS_PER_BOT = 15;
 
+    // --- Stat growth (per tick = every 10 minutes while online) ---
+
+    /** Interval in ticks between stat growth ticks. 10 minutes = 12,000 ticks. */
+    public static final long STAT_GROWTH_INTERVAL_TICKS = 12_000L;
+
+    /**
+     * Base stat gains per growth tick (min, max). Each personality applies a multiplier.
+     * Values are intentionally small so growth is gradual and organic.
+     */
+    public static final int[] KILLS_PER_TICK = {0, 2};
+    public static final int[] DEATHS_PER_TICK = {0, 2};
+    public static final int[] BLOCKS_BROKEN_PER_TICK = {0, 25};
+    public static final int[] BLOCKS_PLACED_PER_TICK = {0, 15};
+    public static final int[] MOBS_KILLED_PER_TICK = {0, 8};
+    public static final int[] FISH_CAUGHT_PER_TICK = {0, 3};
+
+    /**
+     * Personality multipliers for stat growth. Controls how fast each type accumulates stats.
+     * QUIET bots barely grow; TRYHARD bots grow fast.
+     */
+    public static final double GROWTH_MULT_QUIET = 0.2;
+    public static final double GROWTH_MULT_CASUAL = 0.6;
+    public static final double GROWTH_MULT_SOCIAL = 0.5;
+    public static final double GROWTH_MULT_TRYHARD = 1.0;
+    public static final double GROWTH_MULT_CHILL = 0.4;
+
+    /**
+     * Chance (0-100) that a given stat produces zero gain on any tick,
+     * even when the roll would otherwise be positive. Creates lumpy, human-like curves.
+     */
+    public static final int ZERO_GAIN_CHANCE = 30;
+
+    /**
+     * Absolute stat ceilings for bots. No bot can exceed these values regardless of age.
+     * Set conservatively so bots never dominate leaderboards.
+     */
+    public static final long CAP_KILLS = 200;
+    public static final long CAP_DEATHS = 300;
+    public static final long CAP_BLOCKS_BROKEN = 40_000;
+    public static final long CAP_BLOCKS_PLACED = 25_000;
+    public static final long CAP_MOBS_KILLED = 2_000;
+    public static final long CAP_FISH_CAUGHT = 500;
+    public static final long CAP_PLAY_TIME = 15_000; // ~10 days
+
     // --- Death scenarios ---
 
     public static final String[][] DEATH_SCENARIOS = {

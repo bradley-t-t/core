@@ -112,6 +112,21 @@ public final class BotsCommand extends BaseCommand {
                     botService.setMaxOnline(max);
                     Lang.send(context.sender(), "fakeplayers.range-set", "min", min, "max", max);
                 }
+                case "resetdata" -> {
+                    if (context.hasArg(1) && "confirm".equalsIgnoreCase(context.arg(1))) {
+                        Lang.send(context.sender(), "fakeplayers.reset-starting");
+                        botService.resetBotData((filesDeleted, supabaseDeleted) -> {
+                            Lang.send(context.sender(), "fakeplayers.reset-done",
+                                    "files", filesDeleted,
+                                    "rows", supabaseDeleted >= 0 ? supabaseDeleted : 0);
+                            if (supabaseDeleted < 0) {
+                                Lang.send(context.sender(), "fakeplayers.reset-supabase-warning");
+                            }
+                        });
+                    } else {
+                        Lang.send(context.sender(), "fakeplayers.reset-confirm");
+                    }
+                }
                 case "status" -> Lang.send(context.sender(), "fakeplayers.status",
                         "state", botService.isEnabled() ? "enabled" : "disabled",
                         "online", botService.getOnlineFakes().size(),
@@ -122,7 +137,7 @@ public final class BotsCommand extends BaseCommand {
             }
 
             // Only fall through to GUI for known commands that consumed the arg
-            if (Set.of("on", "enable", "off", "disable", "add", "remove", "status", "min", "max", "range").contains(action)) {
+            if (Set.of("on", "enable", "off", "disable", "add", "remove", "status", "min", "max", "range", "resetdata").contains(action)) {
                 return;
             }
         }
@@ -172,7 +187,10 @@ public final class BotsCommand extends BaseCommand {
     @Override
     protected List<String> complete(CommandContext context) {
         if (context.argsLength() == 1) {
-            return List.of("on", "off", "status", "add", "remove", "min", "max", "range");
+            return List.of("on", "off", "status", "add", "remove", "min", "max", "range", "resetdata");
+        }
+        if (context.argsLength() == 2 && "resetdata".equalsIgnoreCase(context.arg(0))) {
+            return List.of("confirm");
         }
         if (context.argsLength() == 2 && "remove".equalsIgnoreCase(context.arg(0))) {
             BotService botService = service(BotService.class);

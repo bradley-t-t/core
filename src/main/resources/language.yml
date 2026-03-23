@@ -454,6 +454,10 @@ fakeplayers:
   min-set: "&fMinimum online bots set to &e{value}&f."
   max-set: "&fMaximum online bots set to &e{value}&f."
   range-set: "&fBot range set to &e{min}&7-&e{max}&f."
+  reset-confirm: "&c&lWarning: &fThis will delete all bot player data files and clear bot stats from the website. Run &e/fakeplayers resetdata confirm &fto proceed."
+  reset-starting: "&fDeleting bot player data... this may take a moment."
+  reset-done: "&fBot data reset complete. Deleted &e{files} &fplayer files and &e{rows} &frows from the website. Bots will regenerate fresh stats on next join."
+  reset-supabase-warning: "&7(Warning: Supabase cleanup may have failed — check console for details.)"
 
 # ---- Player List ----
 list:

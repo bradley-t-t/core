@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7] - 2026-03-23
+
+- Remove bot auto-reply logic from private messages — bots no longer generate AI or fallback responses when messaged directly
+- Remove bot reply behavior from the reply command to match
+- Clean up unused imports (BotMessages, BotService, Bukkit, Random) from MessageCommand
+
 ## [1.6] - 2026-03-23
 
 - Only save default resource files when they don't already exist, preventing user-modified configs from being overwritten on reload

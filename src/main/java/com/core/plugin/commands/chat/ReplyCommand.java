@@ -54,16 +54,8 @@ public final class ReplyCommand extends BaseCommand {
                     .findFirst().orElse(null);
 
             if (botName != null) {
+                // Bots don't reply to private messages
                 Lang.sendRaw(sender, "msg.sent", "target", botName, "message", message);
-
-                // Same logic as MessageCommand: 40% chance to ignore
-                java.util.Random rng = new java.util.Random();
-                if (rng.nextInt(100) >= 40) {
-                    botService.generatePrivateReply(botName, sender.getName(), message, reply -> {
-                        if (!sender.isOnline()) return;
-                        Lang.sendRaw(sender, "msg.received", "sender", botName, "message", reply);
-                    });
-                }
                 return;
             }
         }

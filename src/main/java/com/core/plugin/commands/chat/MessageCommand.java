@@ -5,17 +5,13 @@ import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
 import com.core.plugin.lang.Lang;
-import com.core.plugin.modules.bots.BotMessages;
-import com.core.plugin.service.BotService;
 import com.core.plugin.service.PlayerStateService;
 import com.core.plugin.util.PlayerUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import com.core.plugin.modules.rank.RankLevel;
 
 import java.util.List;
-import java.util.Random;
 
 @CommandInfo(
         name = "msg",
@@ -28,8 +24,6 @@ import java.util.Random;
 )
 public final class MessageCommand extends BaseCommand {
 
-    private static final Random RANDOM = new Random();
-
     public MessageCommand(CorePlugin plugin) {
         super(plugin);
     }
@@ -41,33 +35,8 @@ public final class MessageCommand extends BaseCommand {
         String senderName = context.sender().getName();
 
         if (PlayerUtil.isBot(targetName)) {
+            // Bots don't reply to private messages — just show the sent confirmation
             Lang.sendRaw(context.sender(), "msg.sent", "target", targetName, "message", message);
-
-            if (context.isPlayer()) {
-                Player sender = (Player) context.sender();
-                PlayerStateService stateService = service(PlayerStateService.class);
-                stateService.setLastMessager(sender.getUniqueId(),
-                        com.core.plugin.util.BotUtil.fakeUuid(targetName));
-
-                // 40% chance the bot just doesn't reply (like a real player)
-                if (RANDOM.nextInt(100) < 40) return;
-
-                // Try AI-generated reply, fall back to canned response
-                BotService botService = service(BotService.class);
-                if (botService != null) {
-                    botService.generatePrivateReply(targetName, senderName, message, reply -> {
-                        if (!sender.isOnline()) return;
-                        Lang.sendRaw(sender, "msg.received", "sender", targetName, "message", reply);
-                    });
-                } else {
-                    long delay = 40 + RANDOM.nextInt(80);
-                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                        if (!sender.isOnline()) return;
-                        String reply = BotMessages.random(BotMessages.FALLBACK_DM);
-                        Lang.sendRaw(sender, "msg.received", "sender", targetName, "message", reply);
-                    }, delay);
-                }
-            }
             return;
         }
 

@@ -41,13 +41,17 @@ public final class BotConfig {
 
     // --- Welcome cluster ---
 
-    public static final int WELCOME_MIN_BOTS = 5;
-    public static final int WELCOME_MAX_BOTS = 6;
+    public static final int WELCOME_MIN_BOTS = 1;
+    public static final int WELCOME_MAX_BOTS = 3;
+    /** Chance that nobody welcomes a joining player at all (0-100). */
+    public static final int WELCOME_SKIP_CHANCE = 15;
 
     // --- Bot accusation ---
 
-    public static final int ACCUSATION_MIN_RESPONDERS = 2;
-    public static final int ACCUSATION_MAX_RESPONDERS = 4;
+    public static final int ACCUSATION_MIN_RESPONDERS = 0;
+    public static final int ACCUSATION_MAX_RESPONDERS = 2;
+    /** Chance that bots completely ignore a bot accusation (0-100). */
+    public static final int ACCUSATION_IGNORE_CHANCE = 40;
 
     // --- Group message ---
 
@@ -89,6 +93,13 @@ public final class BotConfig {
     public static final double VOTE_MAX_CHANCE_PER_CHECK = 0.5;
     public static final int VOTE_CHECKS_PER_HOUR = 10;
 
+    // --- Thinking simulation (reading + processing before typing) ---
+
+    /** Minimum "thinking" delay in ticks before a bot starts typing a response. */
+    public static final int THINK_MIN_TICKS = 30;  // 1.5 seconds
+    /** Maximum "thinking" delay in ticks. */
+    public static final int THINK_MAX_TICKS = 100; // 5 seconds
+
     // --- Typing simulation ---
 
     /** Base delay in ticks per character of message length. */
@@ -99,6 +110,22 @@ public final class BotConfig {
     public static final int MAX_TYPING_DELAY = 160;
     /** Random jitter range added to typing delay (ticks). */
     public static final int TYPING_JITTER = 20;
+
+    // --- Conversation fatigue ---
+
+    /** Time window in millis to track recent bot messages for fatigue. */
+    public static final long FATIGUE_WINDOW_MS = 120_000; // 2 minutes
+    /** Max messages a bot can send within the fatigue window before going quiet. */
+    public static final int FATIGUE_MAX_MESSAGES = 4;
+
+    // --- Natural silence ---
+
+    /** If no real player has chatted for this long (ms), bots mostly shut up. */
+    public static final long SILENCE_THRESHOLD_MS = 180_000; // 3 minutes
+    /** Tiny chance of ambient chat during silence periods (0-100). */
+    public static final int SILENCE_AMBIENT_CHANCE = 5;
+    /** Self-initiated messages only happen if a real player chatted within this window (ms). */
+    public static final long SELF_INITIATE_RECENCY_MS = 120_000; // 2 minutes
 
     // --- AFK / Silence windows ---
 

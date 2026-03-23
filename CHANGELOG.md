@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5] - 2026-03-23
+
+- Add thinking delay phase before typing so bots pause to "read and process" before responding
+- Introduce conversation fatigue system that limits bots to 4 messages per 2-minute window
+- Bots now go quiet when no real players have chatted for 3 minutes, with only a 5% ambient chat chance during silence
+- Add message deduplication using Jaccard similarity to prevent near-identical back-to-back bot messages
+- Reduce welcome cluster size from 5-6 bots down to 1-3, with a 15% chance nobody welcomes at all
+- Bots now sometimes completely ignore bot accusations (40% chance) instead of always defending themselves
+- Lower accusation responder count from 2-4 down to 0-2 with longer, more spread out response delays
+- Self-initiated messages now only fire when a real player has chatted within the last 2 minutes
+- Bot-to-bot conversations now respect fatigue checks so overtalkative bots bow out naturally
+- Private message replies now include thinking delay based on the incoming message length
+- Rename local variable shadowing `pool` to `msgPool` in fallback message method
+
 ## [1.4] - 2026-03-23
 
 - Rewrote bot chat rules so fake players naturally react to what others say in chat instead of mostly ignoring each other, while still keeping them as strangers

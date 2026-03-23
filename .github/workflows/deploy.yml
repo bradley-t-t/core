@@ -31,4 +31,5 @@ jobs:
           sudo apt-get install -y sshpass > /dev/null 2>&1
           echo 'put ./target/Core.jar "/1. Core Minecraft/plugins/Core.jar"' > /tmp/sftp_batch
           echo 'bye' >> /tmp/sftp_batch
-          sshpass -p "$SFTP_PASSWORD" sftp -o StrictHostKeyChecking=no -o ConnectTimeout=30 -b /tmp/sftp_batch -P "$SFTP_PORT" "$SFTP_USERNAME@$SFTP_HOST"
+          export SSHPASS="$SFTP_PASSWORD"
+          sshpass -e sftp -o StrictHostKeyChecking=no -o ConnectTimeout=30 -b /tmp/sftp_batch -P "$SFTP_PORT" "$SFTP_USERNAME@$SFTP_HOST"

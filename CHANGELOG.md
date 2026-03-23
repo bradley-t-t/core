@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3] - 2026-03-23
+
+- Switch sshpass to use environment variable (-e) instead of passing the password directly via command line (-p) in the deploy workflow
+
 ## [2.2] - 2026-03-23
 
 - Switch SFTP deploy from heredoc to batch file mode for more reliable command execution

@@ -22,12 +22,11 @@ jobs:
         run: mvn clean package -q
 
       - name: Upload to Server via SFTP
-        uses: appleboy/scp-action@v0.1.7
+        uses: Dylan700/sftp-upload-action@v1.1.4
         with:
-          host: ${{ secrets.SFTP_HOST }}
+          server: ${{ secrets.SFTP_HOST }}
           port: ${{ secrets.SFTP_PORT }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          source: ./target/Core.jar
-          target: "/1. Core Minecraft/plugins/"
-          strip_components: 2
+          uploads: |
+            ./target/Core.jar => /1. Core Minecraft/plugins/Core.jar

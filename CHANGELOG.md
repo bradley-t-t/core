@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.5] - 2026-03-23
+
+- Switch deploy workflow from appleboy/scp-action to Dylan700/sftp-upload-action for server uploads
+- Simplify file upload config using inline path mapping instead of separate source/target/strip_components
+
 ## [2.4] - 2026-03-23
 
 - Replace manual sshpass/SFTP script with appleboy/scp-action for deploying the plugin jar to the server

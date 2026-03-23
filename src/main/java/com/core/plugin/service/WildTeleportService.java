@@ -146,9 +146,6 @@ public final class WildTeleportService implements Service {
         if (isFirstJoin) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (!player.isOnline()) return;
-                Lang.send(player, "wild.welcome-1");
-                Lang.send(player, "wild.welcome-2");
-                Lang.send(player, "wild.welcome-3");
                 Lang.title(player, "title.welcome", "title.welcome-subtitle",
                         20, 80, 20, new Object[0]);
             }, 40L);

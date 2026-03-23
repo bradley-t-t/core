@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6] - 2026-03-23
+
+- Rewrote the first-join welcome message to be more immersive and descriptive
+- Removed the separate wild welcome chat messages from WildTeleportService, keeping only the title
+- Replaced deprecated getBedSpawnLocation() with getRespawnLocation() for bed spawn check
+- Softened the no-bed warning tone for returning players
+
 ## [1.5] - 2026-03-23
 
 - Add first-join tips explaining there is no spawn, urging players to place a bed immediately

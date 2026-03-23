@@ -322,7 +322,10 @@ public final class PlayerListener implements Listener {
         // Last seen or first join tips
         player.sendMessage("");
         if (isFirstJoin) {
-            player.sendMessage(MessageUtil.colorize("  &c&l! &fThere is no spawn. &7You start at a random location."));
+            player.sendMessage(MessageUtil.colorize("  &7You have been dropped into the wild at a random"));
+            player.sendMessage(MessageUtil.colorize("  &7location. There is no spawn. Gather resources,"));
+            player.sendMessage(MessageUtil.colorize("  &7build a base, and &esurvive&7."));
+            player.sendMessage("");
             player.sendMessage(MessageUtil.colorize("  &c&l! &7Place a &fbed &7immediately to set your respawn point."));
             player.sendMessage(MessageUtil.colorize("  &c&l! &7If you die without a bed, you'll spawn &fsomewhere new&7."));
         } else {
@@ -332,8 +335,8 @@ public final class PlayerListener implements Listener {
                 String timeAgo = formatElapsed(elapsed);
                 player.sendMessage(MessageUtil.colorize("  &7You last joined &f" + timeAgo + " &7ago"));
             }
-            if (player.getBedSpawnLocation() == null) {
-                player.sendMessage(MessageUtil.colorize("  &c&l! &7You still don't have a &fbed spawn&7. Place a bed!"));
+            if (player.getRespawnLocation() == null) {
+                player.sendMessage(MessageUtil.colorize("  &c&l! &7You don't have a &fbed spawn&7. Place a bed!"));
             }
         }
 

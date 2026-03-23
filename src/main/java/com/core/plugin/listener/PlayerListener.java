@@ -8,6 +8,7 @@ import com.core.plugin.service.RankService;
 import com.core.plugin.service.BotService;
 import com.core.plugin.service.PlayerStateService;
 import com.core.plugin.service.PlayerStatsService;
+import com.core.plugin.service.StatsSyncService;
 import com.core.plugin.service.WildTeleportService;
 import com.core.plugin.util.MessageUtil;
 import org.bukkit.Material;
@@ -157,6 +158,10 @@ public final class PlayerListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        // Sync stats to Supabase before unloading (marks player offline)
+        StatsSyncService statsSync = plugin.services().get(StatsSyncService.class);
+        if (statsSync != null) statsSync.syncPlayerQuit(player);
+
         plugin.services().get(PlayerStateService.class).updateLastSeen(player.getUniqueId());
         plugin.services().get(PlayerStatsService.class).unloadPlayer(player.getUniqueId());
 

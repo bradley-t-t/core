@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2] - 2026-03-23
+
+- Add StatsSyncService to periodically sync player stats (kills, deaths, blocks, playtime, etc.) to Supabase every 2 minutes for website leaderboards and profiles
+- Add SubscriptionService to sync Diamond rank with Supabase diamond_subscriptions table, granting/revoking Diamond based on subscription status
+- Add persistent pending-diamond.yml queue so Diamond rank changes survive server restarts when players are offline
+- Update DiamondListener to check subscription status on join before showing the custom join message, with a 2-second delay to let the async sync complete
+- Sync player stats to Supabase on quit in PlayerListener before unloading player data
+- Bulk sync all offline player data from playerdata files on startup so historical players appear in the stats table
+- Sync bot players to Supabase with randomized stats and deterministic join dates
+- Mark all players offline in Supabase on server shutdown
+- Add supabase-url and supabase-anon-key config entries to config.yml
+
 ## [1.1] - 2026-03-23
 
 - Add Diamond rank perks system with DiamondService for managing trails, join messages, and priority queue

@@ -4,6 +4,7 @@ import com.core.plugin.CorePlugin;
 import com.core.plugin.modules.rank.RankLevel;
 import com.core.plugin.service.RankService;
 import com.core.plugin.service.DiamondService;
+import com.core.plugin.service.SubscriptionService;
 import com.core.plugin.util.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -40,27 +41,36 @@ public final class DiamondListener implements Listener {
     }
 
     /**
-     * Custom join message for Diamond players. Fires one tick after join so the
-     * player is fully loaded.
+     * Sync subscription status and send custom join message for Diamond players.
+     * Subscription check runs async; join message fires after a short delay.
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        DiamondService diamondService = plugin.services().get(DiamondService.class);
-        RankService rankService = plugin.services().get(RankService.class);
 
-        if (!rankService.getLevel(player.getUniqueId()).isAtLeast(RankLevel.DIAMOND)) return;
+        // Sync Diamond rank from Supabase subscription status
+        SubscriptionService subscriptionService = plugin.services().get(SubscriptionService.class);
+        if (subscriptionService != null) {
+            subscriptionService.checkAndSync(player);
+        }
 
-        String customMessage = diamondService.getJoinMessage(player.getUniqueId());
-        if (customMessage == null || customMessage.isBlank()) return;
-
-        String formatted = MessageUtil.colorize(
-                "&b[Diamond] &f" + player.getName() + " &7> &b" + customMessage);
-
+        // Custom join message — delay so subscription sync can complete first
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (!player.isOnline()) return;
+
+            RankService rankService = plugin.services().get(RankService.class);
+            if (!rankService.getLevel(player.getUniqueId()).isAtLeast(RankLevel.DIAMOND)) return;
+
+            DiamondService diamondService = plugin.services().get(DiamondService.class);
+            String customMessage = diamondService.getJoinMessage(player.getUniqueId());
+            if (customMessage == null || customMessage.isBlank()) return;
+
+            String formatted = MessageUtil.colorize(
+                    "&b[Diamond] &f" + player.getName() + " &7> &b" + customMessage);
+
             for (Player online : Bukkit.getOnlinePlayers()) {
                 online.sendMessage(formatted);
             }
-        }, 1L);
+        }, 40L); // 2 second delay to let async subscription check finish
     }
 }

@@ -91,6 +91,12 @@ tree-felling:
   # Ticks between each layer breaking (2 ticks = 0.1 seconds)
   ticks-per-layer: 2
 
+# Diamond subscription sync (Supabase)
+# Connects to the diamond_subscriptions table to auto-grant/revoke Diamond rank.
+# Leave empty to disable subscription syncing.
+supabase-url: "https://xiasuygifhdqzuuizsaj.supabase.co"
+supabase-anon-key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpYXN1eWdpZmhkcXp1dWl6c2FqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjQ2OTcsImV4cCI6MjA4OTgwMDY5N30.tGzr3UlI0gzH6aAUdL0p32hgF3qATyYZ795ejeV3J5k"
+
 # Vote system
 voting:
   enabled: true

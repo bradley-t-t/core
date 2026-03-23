@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.8] - 2026-03-23
+
+- Fix "last seen" timestamp in welcome message by capturing it before updating, so returning players see the correct time since their previous join
+- Remove redundant PlayerStateService lookup from sendWelcomeMessage by passing the pre-fetched timestamp as a parameter
+
 ## [2.7] - 2026-03-23
 
 - Configure lftp to auto-confirm SFTP host keys during deployment, avoiding interactive prompts in CI

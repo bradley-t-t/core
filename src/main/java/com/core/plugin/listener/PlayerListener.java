@@ -54,6 +54,7 @@ public final class PlayerListener implements Listener {
         RankService rankService = plugin.services().get(RankService.class);
         PlayerStatsService statsService = plugin.services().get(PlayerStatsService.class);
 
+        long previousLastSeen = state.getLastSeen(player.getUniqueId());
         state.updateLastSeen(player.getUniqueId());
         statsService.recordFirstJoinIfNew(player.getUniqueId());
         statsService.loadPlayer(player.getUniqueId());
@@ -120,7 +121,7 @@ public final class PlayerListener implements Listener {
         // Welcome message with clickable links
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             if (!player.isOnline()) return;
-            sendWelcomeMessage(player, isFirstJoin);
+            sendWelcomeMessage(player, isFirstJoin, previousLastSeen);
         }, 20L);
 
         // Set tab list name with rank prefix
@@ -275,7 +276,7 @@ public final class PlayerListener implements Listener {
         }
     }
 
-    private void sendWelcomeMessage(Player player, boolean isFirstJoin) {
+    private void sendWelcomeMessage(Player player, boolean isFirstJoin, long previousLastSeen) {
         String divider = MessageUtil.colorize("&8&m                                                            ");
         String greeting = isFirstJoin
                 ? MessageUtil.colorize("&f&lWelcome to Core Minecraft!")
@@ -329,9 +330,8 @@ public final class PlayerListener implements Listener {
             player.sendMessage(MessageUtil.colorize("  &c&l! &7Place a &fbed &7immediately to set your respawn point."));
             player.sendMessage(MessageUtil.colorize("  &c&l! &7If you die without a bed, you'll spawn &fsomewhere new&7."));
         } else {
-            long lastSeen = plugin.services().get(PlayerStateService.class).getLastSeen(player.getUniqueId());
-            if (lastSeen > 0) {
-                long elapsed = System.currentTimeMillis() - lastSeen;
+            if (previousLastSeen > 0) {
+                long elapsed = System.currentTimeMillis() - previousLastSeen;
                 String timeAgo = formatElapsed(elapsed);
                 player.sendMessage(MessageUtil.colorize("  &7You last joined &f" + timeAgo + " &7ago"));
             }

@@ -22,14 +22,12 @@ jobs:
         run: mvn clean package -q
 
       - name: Upload to Server via SFTP
-        env:
-          SFTP_HOST: ${{ secrets.SFTP_HOST }}
-          SFTP_PORT: ${{ secrets.SFTP_PORT }}
-          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
-          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
-        run: |
-          sudo apt-get install -y sshpass > /dev/null 2>&1
-          echo 'put ./target/Core.jar "/1. Core Minecraft/plugins/Core.jar"' > /tmp/sftp_batch
-          echo 'bye' >> /tmp/sftp_batch
-          export SSHPASS="$SFTP_PASSWORD"
-          sshpass -e sftp -o StrictHostKeyChecking=no -o ConnectTimeout=30 -b /tmp/sftp_batch -P "$SFTP_PORT" "$SFTP_USERNAME@$SFTP_HOST"
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          port: ${{ secrets.SFTP_PORT }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          source: ./target/Core.jar
+          target: "/1. Core Minecraft/plugins/"
+          strip_components: 2

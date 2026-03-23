@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4] - 2026-03-23
+
+- Replace manual sshpass/SFTP script with appleboy/scp-action for deploying the plugin jar to the server
+- Remove runtime apt-get install of sshpass, no longer needed with the dedicated action
+
 ## [2.3] - 2026-03-23
 
 - Switch sshpass to use environment variable (-e) instead of passing the password directly via command line (-p) in the deploy workflow

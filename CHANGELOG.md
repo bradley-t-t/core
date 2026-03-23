@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1] - 2026-03-23
+
+- Add 30-second connection timeout to SFTP deploy step to avoid hanging indefinitely
+- Quote the heredoc delimiter to prevent variable expansion inside the SFTP command block
+- Add explicit `bye` command to cleanly close the SFTP session after upload
+
 ## [2.0] - 2026-03-23
 
 - Replace third-party SFTP Deploy Action with direct sshpass/sftp commands for deploying the plugin JAR to the server

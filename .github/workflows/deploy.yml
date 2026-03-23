@@ -29,6 +29,7 @@ jobs:
           SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
         run: |
           sudo apt-get install -y sshpass > /dev/null 2>&1
-          sshpass -p "$SFTP_PASSWORD" sftp -o StrictHostKeyChecking=no -P "$SFTP_PORT" "$SFTP_USERNAME@$SFTP_HOST" <<EOF
+          sshpass -p "$SFTP_PASSWORD" sftp -o StrictHostKeyChecking=no -o ConnectTimeout=30 -P "$SFTP_PORT" "$SFTP_USERNAME@$SFTP_HOST" <<'EOF'
           put ./target/Core.jar "/1. Core Minecraft/plugins/Core.jar"
+          bye
           EOF

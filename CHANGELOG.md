@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3] - 2026-03-24
+
+- Reduced player count logging interval from 5 minutes to 1 minute
+
 ## [3.2] - 2026-03-24
 
 - Fix player count calculation to get real players directly from Bukkit and derive total by adding bots, instead of subtracting bots from total

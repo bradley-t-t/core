@@ -19,7 +19,7 @@ import java.util.logging.Level;
  */
 public final class PlayerCountService implements Service {
 
-    private static final long LOG_INTERVAL_TICKS = 20L * 60 * 5; // 5 minutes
+    private static final long LOG_INTERVAL_TICKS = 20L * 60; // 1 minute
     private static final long STARTUP_DELAY_TICKS = 400L; // 20 seconds
 
     private final CorePlugin plugin;
@@ -43,7 +43,7 @@ public final class PlayerCountService implements Service {
         logTask = Bukkit.getScheduler().runTaskTimerAsynchronously(
                 plugin, this::logCount, STARTUP_DELAY_TICKS, LOG_INTERVAL_TICKS);
 
-        plugin.getLogger().info("Player count logging enabled (5-minute interval).");
+        plugin.getLogger().info("Player count logging enabled (1-minute interval).");
     }
 
     @Override

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0] - 2026-03-24
+
+- Replace plain text link instructions with a clickable chat component that opens the website directly with the link code
+- Build the clickable message using BungeeCord TextComponent with hover text and OPEN_URL click event
+- Add site URL constant for constructing the account link URL with the generated code
+- Split the single instructions message into separate clickable link and expiry note messages in language.yml
+
 ## [2.9] - 2026-03-24
 
 - Add /link command for players to link their Minecraft account to the website via a one-time 6-character code

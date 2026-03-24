@@ -6,6 +6,11 @@ import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
 import com.core.plugin.lang.Lang;
 import com.core.plugin.modules.rank.RankLevel;
+import com.core.plugin.util.MessageUtil;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -36,6 +41,7 @@ public final class LinkCommand extends BaseCommand {
     private static final String CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     private static final int CODE_LENGTH = 6;
     private static final SecureRandom RANDOM = new SecureRandom();
+    private static final String SITE_URL = "https://coreminecraft.com";
 
     private final HttpClient httpClient;
 
@@ -55,13 +61,33 @@ public final class LinkCommand extends BaseCommand {
         String uuid = player.getUniqueId().toString();
         String username = player.getName();
 
-        // Store code in Supabase asynchronously
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             boolean stored = storeCode(code, uuid, username);
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 if (stored) {
+                    String linkUrl = SITE_URL + "/account?code=" + code;
+                    String prefix = Lang.get("prefix");
+
+                    // Line 1: code display
                     Lang.send(player, "link.code-generated", "code", code);
-                    Lang.send(player, "link.instructions");
+
+                    // Line 2: clickable link
+                    TextComponent prefixComp = new TextComponent(
+                            TextComponent.fromLegacy(MessageUtil.colorize(prefix)));
+
+                    TextComponent clickable = new TextComponent(
+                            TextComponent.fromLegacy(MessageUtil.colorize(
+                                    Lang.get("link.click-to-link"))));
+                    clickable.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, linkUrl));
+                    clickable.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                            new Text(TextComponent.fromLegacy(MessageUtil.colorize(
+                                    Lang.get("link.click-hover"))))));
+
+                    prefixComp.addExtra(clickable);
+                    player.spigot().sendMessage(prefixComp);
+
+                    // Line 3: expiry note
+                    Lang.send(player, "link.expires");
                 } else {
                     Lang.send(player, "link.error");
                 }

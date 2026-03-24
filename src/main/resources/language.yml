@@ -531,7 +531,9 @@ vote:
 # ---- Account Link ----
 link:
   code-generated: "&fYour link code is: &a&l{code}"
-  instructions: "&7Go to your account page on the website and enter this code. It expires in 10 minutes."
+  click-to-link: "&b&n[Click To Link]"
+  click-hover: "&7Click to open the website and link your account"
+  expires: "&7This code expires in 10 minutes."
   error: "&cFailed to generate link code. Try again later."
 
 # ---- Discord ----

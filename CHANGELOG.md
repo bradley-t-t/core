@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.9] - 2026-03-24
+
+- Add /link command for players to link their Minecraft account to the website via a one-time 6-character code
+- Generate secure alphanumeric codes using SecureRandom, stored in Supabase link_codes table with a 10-minute expiry
+- Store link codes asynchronously to avoid blocking the main server thread
+- Add language entries for the link command (code display, instructions, and error messaging)
+
 ## [1.8] - 2026-03-23
 
 - Significantly reduced all bot chat response chances (ambient, regular, mention, death, join) to make bots much less talkative overall

@@ -528,6 +528,12 @@ vote:
   url: "&fVote for us: &e{url}"
   url-click: "&7Click to open"
 
+# ---- Account Link ----
+link:
+  code-generated: "&fYour link code is: &a&l{code}"
+  instructions: "&7Go to your account page on the website and enter this code. It expires in 10 minutes."
+  error: "&cFailed to generate link code. Try again later."
+
 # ---- Discord ----
 discord:
   link: "&fJoin our Discord: &b&n[Click Here]"

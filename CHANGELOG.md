@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1] - 2026-03-24
+
+- Add PlayerCountService that logs real and bot player counts to Supabase every 5 minutes for admin panel historical activity charts
+- Separate real vs bot counts by integrating with BotService to distinguish fake players from actual ones
+- Gracefully skip logging when Supabase config (url/anon-key) is missing
+- Run count logging asynchronously with a 20-second startup delay to avoid impacting server performance
+
 ## [3.0] - 2026-03-24
 
 - Replace plain text link instructions with a clickable chat component that opens the website directly with the link code

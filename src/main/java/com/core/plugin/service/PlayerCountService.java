@@ -52,11 +52,11 @@ public final class PlayerCountService implements Service {
     }
 
     private void logCount() {
-        int totalOnline = Bukkit.getOnlinePlayers().size();
+        int realCount = Bukkit.getOnlinePlayers().size();
 
         BotService botService = plugin.services().get(BotService.class);
         int botCount = botService != null ? botService.getOnlineFakes().size() : 0;
-        int realCount = totalOnline - botCount;
+        int totalOnline = realCount + botCount;
 
         String supabaseUrl = plugin.getConfig().getString("supabase-url", "");
         String anonKey = plugin.getConfig().getString("supabase-anon-key", "");

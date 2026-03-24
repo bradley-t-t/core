@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2] - 2026-03-24
+
+- Fix player count calculation to get real players directly from Bukkit and derive total by adding bots, instead of subtracting bots from total
+
 ## [3.1] - 2026-03-24
 
 - Add PlayerCountService that logs real and bot player counts to Supabase every 5 minutes for admin panel historical activity charts

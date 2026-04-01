@@ -3,3 +3,4 @@ target/
 *.iml
 public/
 src/main/resources/config.yml
+.DS_Store

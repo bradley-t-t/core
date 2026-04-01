@@ -20,8 +20,8 @@ public final class ClaimService implements Service {
     private final ClaimIndex index;
     private final ClaimVisualizer visualizer;
     private final Map<UUID, ClaimSelection> activeSelections = new ConcurrentHashMap<>();
-    private final Map<UUID, List<ClaimRegion>> claimsByOwner = new HashMap<>();
-    private final List<ClaimRegion> allClaims = new ArrayList<>();
+    private final Map<UUID, List<ClaimRegion>> claimsByOwner = new ConcurrentHashMap<>();
+    private final List<ClaimRegion> allClaims = Collections.synchronizedList(new ArrayList<>());
 
     public ClaimService(CorePlugin plugin) {
         this.plugin = plugin;
@@ -43,7 +43,9 @@ public final class ClaimService implements Service {
 
     @Override
     public void disable() {
-        dataManager.saveAll(allClaims);
+        synchronized (allClaims) {
+            dataManager.saveAll(allClaims);
+        }
         activeSelections.clear();
         allClaims.clear();
         claimsByOwner.clear();
@@ -182,9 +184,12 @@ public final class ClaimService implements Service {
 
     /** Deletes a claim. Only the owner or an OPERATOR may delete. */
     public boolean deleteClaim(UUID playerId, UUID claimId) {
-        ClaimRegion target = allClaims.stream()
-                .filter(c -> c.claimId().equals(claimId))
-                .findFirst().orElse(null);
+        ClaimRegion target;
+        synchronized (allClaims) {
+            target = allClaims.stream()
+                    .filter(c -> c.claimId().equals(claimId))
+                    .findFirst().orElse(null);
+        }
         if (target == null) return false;
 
         boolean isOwner = target.ownerId().equals(playerId);
@@ -271,7 +276,9 @@ public final class ClaimService implements Service {
     }
 
     private Optional<ClaimRegion> findClaim(UUID claimId) {
-        return allClaims.stream().filter(c -> c.claimId().equals(claimId)).findFirst();
+        synchronized (allClaims) {
+            return allClaims.stream().filter(c -> c.claimId().equals(claimId)).findFirst();
+        }
     }
 
     /** Result codes for {@link #createClaim}. */

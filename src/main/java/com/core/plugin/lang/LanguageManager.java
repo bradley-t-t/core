@@ -64,8 +64,13 @@ public final class LanguageManager {
         var resource = plugin.getResource("language.yml");
         if (resource == null) return;
 
-        YamlConfiguration defaults = YamlConfiguration.loadConfiguration(
-                new InputStreamReader(resource, StandardCharsets.UTF_8));
+        YamlConfiguration defaults;
+        try (InputStreamReader reader = new InputStreamReader(resource, StandardCharsets.UTF_8)) {
+            defaults = YamlConfiguration.loadConfiguration(reader);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to read bundled language.yml defaults", e);
+            return;
+        }
         YamlConfiguration current = YamlConfiguration.loadConfiguration(languageFile);
 
         Map<String, Object> defaultValues = new HashMap<>();

@@ -19,6 +19,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,8 +44,8 @@ public final class SubscriptionService implements Service {
     private final CorePlugin plugin;
     private final HttpClient httpClient;
     private final File pendingFile;
-    private final Set<String> pendingGrants = new HashSet<>();
-    private final Set<String> pendingRevokes = new HashSet<>();
+    private final Set<String> pendingGrants = ConcurrentHashMap.newKeySet();
+    private final Set<String> pendingRevokes = ConcurrentHashMap.newKeySet();
     private BukkitTask syncTask;
 
     public SubscriptionService(CorePlugin plugin) {

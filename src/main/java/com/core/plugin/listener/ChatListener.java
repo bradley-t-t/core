@@ -67,11 +67,14 @@ public final class ChatListener implements Listener {
                     ClickEvent.Action.RUN_COMMAND, "/user " + player.getName()));
         }
 
+        // Strip & color/format codes from raw input to prevent player chat injection
+        String rawMessage = event.getMessage().replaceAll("(?i)&[0-9a-fk-or]", "");
+
         // Separator and message
         BaseComponent[] separator = TextComponent.fromLegacyText(
                 MessageUtil.colorize(" &8>> "));
         BaseComponent[] messageBody = TextComponent.fromLegacyText(
-                MessageUtil.colorize(chatColor + event.getMessage()));
+                MessageUtil.colorize(chatColor + rawMessage));
 
         // Combine into final message
         ComponentBuilder fullMessage = new ComponentBuilder();
@@ -87,7 +90,7 @@ public final class ChatListener implements Listener {
         // Fake players may react to chat
         BotService fakeService =
                 plugin.services().get(BotService.class);
-        if (fakeService != null) fakeService.onRealPlayerChat(player.getName(), event.getMessage());
+        if (fakeService != null) fakeService.onRealPlayerChat(player.getName(), rawMessage);
     }
 
     private String buildHoverPreview(Player player, Rank rank, PlayerStateService stateService) {

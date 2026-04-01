@@ -3,7 +3,7 @@
 <p align="center"><strong>All-in-one Minecraft Paper plugin for custom survival servers</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-3.3-blue" alt="Version 3.3" />
+  <img src="https://img.shields.io/badge/v3.3-release-1e3a5f" alt="Version 3.3" />
   <img src="https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white" alt="Java 21" />
   <img src="https://img.shields.io/badge/Paper-1.21.4-44cc11?logo=minecraft&logoColor=white" alt="Paper 1.21.4" />
   <img src="https://img.shields.io/badge/Maven-Build-C71A36?logo=apachemaven&logoColor=white" alt="Maven Build" />
@@ -63,7 +63,7 @@ External integrations are handled at the service layer: Supabase receives period
 
 ---
 
-| Stat | Count |
+| Metric | Value |
 |---|---|
 | Modules | 8 |
 | Commands | 30+ |

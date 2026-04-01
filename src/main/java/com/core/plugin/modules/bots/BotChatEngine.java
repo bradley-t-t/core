@@ -432,8 +432,16 @@ public final class BotChatEngine {
         }
         activeRequests.incrementAndGet();
 
+        HttpURLConnection conn;
         try {
-            HttpURLConnection conn = (HttpURLConnection) URI.create(API_URL).toURL().openConnection();
+            conn = (HttpURLConnection) URI.create(API_URL).toURL().openConnection();
+        } catch (IOException e) {
+            activeRequests.decrementAndGet();
+            plugin.getLogger().warning("[FakeChat] Failed to open connection: " + e.getMessage());
+            return null;
+        }
+
+        try {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "Bearer " + apiKey);
@@ -455,14 +463,19 @@ public final class BotChatEngine {
             int responseCode = conn.getResponseCode();
             if (responseCode != 200) {
                 String errorBody = "";
-                try {
-                    errorBody = new String(conn.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
+                try (var errorStream = conn.getErrorStream()) {
+                    if (errorStream != null) {
+                        errorBody = new String(errorStream.readAllBytes(), StandardCharsets.UTF_8);
+                    }
                 } catch (Exception ignored) {}
                 plugin.getLogger().warning("[FakeChat] API returned HTTP " + responseCode + ": " + errorBody);
                 return null;
             }
 
-            String response = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            String response;
+            try (var inputStream = conn.getInputStream()) {
+                response = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
             String content = extractContent(response);
             if (content == null) {
                 plugin.getLogger().warning("[FakeChat] Could not extract content from: " + response.substring(0, Math.min(200, response.length())));
@@ -472,6 +485,7 @@ public final class BotChatEngine {
             plugin.getLogger().warning("[FakeChat] API call failed: " + e.getClass().getSimpleName() + ": " + e.getMessage());
             return null;
         } finally {
+            conn.disconnect();
             activeRequests.decrementAndGet();
         }
     }

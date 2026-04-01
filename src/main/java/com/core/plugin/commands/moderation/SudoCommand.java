@@ -5,8 +5,10 @@ import com.core.plugin.command.BaseCommand;
 import com.core.plugin.command.CommandContext;
 import com.core.plugin.command.CommandInfo;
 import com.core.plugin.lang.Lang;
+import com.core.plugin.service.RankService;
 import com.core.plugin.util.PlayerUtil;
 import com.core.plugin.util.SoundUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import com.core.plugin.modules.rank.RankLevel;
@@ -33,6 +35,17 @@ public final class SudoCommand extends BaseCommand {
         Player target = context.targetPlayer(0);
         if (target == null) return;
         if (context.isSelf(target)) return;
+
+        RankService rankService = plugin.services().get(RankService.class);
+        if (context.isPlayer()) {
+            Player senderPlayer = (Player) context.sender();
+            RankLevel senderRank = rankService.getLevel(senderPlayer.getUniqueId());
+            RankLevel targetRank = rankService.getLevel(target.getUniqueId());
+            if (targetRank.weight() >= senderRank.weight()) {
+                context.sender().sendMessage(ChatColor.RED + "You cannot sudo a player of equal or higher rank.");
+                return;
+            }
+        }
 
         String input = context.joinArgs(1);
 

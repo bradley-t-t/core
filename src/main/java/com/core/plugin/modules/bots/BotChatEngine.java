@@ -9,6 +9,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -46,9 +47,9 @@ public final class BotChatEngine {
     private final CorePlugin plugin;
 
     private final List<String> chatHistory = new ArrayList<>();
-    private final Map<String, String> playerStyles = new HashMap<>();
-    private final Map<String, List<String>> perPlayerHistory = new HashMap<>();
-    private final Map<String, List<String>> botFacts = new HashMap<>();
+    private final Map<String, String> playerStyles = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> perPlayerHistory = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> botFacts = new ConcurrentHashMap<>();
     private volatile Set<String> botAccusers = Set.of();
     private final java.io.File botDataDir;
     private final String apiKey;

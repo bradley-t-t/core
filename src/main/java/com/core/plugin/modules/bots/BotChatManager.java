@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -37,7 +38,7 @@ public final class BotChatManager {
     private volatile long lastRealPlayerChatTime = 0;
 
     /** Tracks bot-to-bot chain depth to prevent infinite loops. */
-    private int botToBotChainDepth = 0;
+    private final AtomicInteger botToBotChainDepth = new AtomicInteger(0);
 
     private final Random random = new Random();
     private int activityTaskId = -1;
@@ -248,7 +249,7 @@ public final class BotChatManager {
     // --- Bot-to-bot interaction ---
 
     private void maybeTriggerbotToBot(String speakerBot, String message) {
-        if (botToBotChainDepth >= BotConfig.BOT_TO_BOT_MAX_CHAIN) return;
+        if (botToBotChainDepth.get() >= BotConfig.BOT_TO_BOT_MAX_CHAIN) return;
         if (random.nextInt(100) >= BotConfig.BOT_TO_BOT_CHANCE) return;
 
         List<String> candidates = onlineBots.stream()
@@ -269,10 +270,10 @@ public final class BotChatManager {
         long extraDelay = randomBetween(40, 100);
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!isActive(responder) || isFatigued(responder)) return;
-            botToBotChainDepth++;
+            botToBotChainDepth.incrementAndGet();
             sendWithThinkingAndTyping(responder, reply, false, () -> {
                 if (chatEngine != null) chatEngine.addContext(responder, reply);
-                botToBotChainDepth = 0;
+                botToBotChainDepth.set(0);
             });
         }, extraDelay);
     }

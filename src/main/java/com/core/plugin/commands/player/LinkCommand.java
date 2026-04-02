@@ -103,6 +103,24 @@ public final class LinkCommand extends BaseCommand {
         return sb.toString();
     }
 
+    private static String escapeJson(String value) {
+        StringBuilder sb = new StringBuilder(value.length());
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            switch (c) {
+                case '"':  sb.append("\\\""); break;
+                case '\\': sb.append("\\\\"); break;
+                case '\b': sb.append("\\b");  break;
+                case '\f': sb.append("\\f");  break;
+                case '\n': sb.append("\\n");  break;
+                case '\r': sb.append("\\r");  break;
+                case '\t': sb.append("\\t");  break;
+                default:   sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
     private boolean storeCode(String code, String playerUuid, String playerUsername) {
         String supabaseUrl = plugin.getConfig().getString("supabase-url", "");
         String supabaseKey = plugin.getConfig().getString("supabase-anon-key", "");
@@ -114,7 +132,7 @@ public final class LinkCommand extends BaseCommand {
 
         String json = String.format(
                 "{\"code\":\"%s\",\"player_uuid\":\"%s\",\"player_username\":\"%s\"}",
-                code, playerUuid, playerUsername
+                escapeJson(code), escapeJson(playerUuid), escapeJson(playerUsername)
         );
 
         try {

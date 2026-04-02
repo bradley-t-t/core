@@ -341,7 +341,9 @@ public final class ClaimProtectionListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        playerCurrentClaim.remove(event.getPlayer().getUniqueId());
+        UUID playerId = event.getPlayer().getUniqueId();
+        playerCurrentClaim.remove(playerId);
+        lastMessageTime.remove(playerId);
     }
 
     // --- Helpers ---

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2026-04-02
+
+- core Release v1.0.1
+
 ## [3.3] - 2026-03-24
 
 - Reduced player count logging interval from 5 minutes to 1 minute

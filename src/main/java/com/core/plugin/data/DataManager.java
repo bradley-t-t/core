@@ -258,7 +258,10 @@ public final class DataManager {
             long duration = ((Number) raw.get("duration")).longValue();
             long issuedAt = ((Number) raw.get("issued-at")).longValue();
             long expiresAt = ((Number) raw.get("expires-at")).longValue();
-            boolean active = (Boolean) raw.get("active");
+            Object activeRaw = raw.get("active");
+            boolean active = activeRaw instanceof Boolean
+                    ? (Boolean) activeRaw
+                    : Boolean.parseBoolean(String.valueOf(activeRaw));
 
             records.add(new PunishmentRecord(
                     playerId, targetName, moderator, moderatorName,

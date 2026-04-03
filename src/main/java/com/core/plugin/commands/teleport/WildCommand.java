@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 @CommandInfo(
         name = "wild",
         aliases = {"rtp", "randomtp"},
-        minRank = RankLevel.OPERATOR,
+        minRank = RankLevel.MEMBER,
         playerOnly = true,
         description = "Teleport to a random location in the wild",
         usage = "/wild",
